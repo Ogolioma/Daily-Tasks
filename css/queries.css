@@ -5,16 +5,16 @@
   html { font-size: 66.25%; }
 }
 @media (max-width: 59em) { /* 944px */
-  html { font-size: 85%; }
+  html { font-size: 55%; }
 }
 @media (max-width: 44em) { /* 704px */
-  html { font-size: 60%; }
+  html { font-size: 45%; }
 }
 @media (max-width: 35em) { /* 560px */
-  html { font-size: 77%; }
+  html { font-size: 52%; }
 }
 @media (max-width: 25em) { /* 400px */
-  html { font-size: 72%; }
+  html { font-size: 40%; }
 }
 
 /* ==============================
@@ -115,7 +115,7 @@
 }
 
 .task-card h4 {
-  font-size: 2.8rem;
+  font-size: 1.9rem;
   font-weight: 500;
 }
 
@@ -126,7 +126,7 @@
 
 .task-points {
   color: #000;
-  font-size: 2.2rem;
+  font-size: 2rem;
   font-weight: 700;
 }
 
@@ -154,11 +154,11 @@
 
 .task-title {
   font-weight: 600;
-  font-size: 3.5rem;
+  font-size: 2.3rem;
   color: #000080;
 }
 .task-inst {
-  font-size: 3rem;
+  font-size: 1.8rem;
   margin-bottom: 2rem;
 }
 }
@@ -236,7 +236,7 @@
   }
 }
 
-@media (max-width: 25em) {
+@media (max-width: 35em) {
   .heading-primary {
     font-size: 3.6rem;
   }
@@ -290,6 +290,7 @@
     pointer-events: none;
     visibility: hidden;
     z-index: 998;
+    padding: 5rem 0;
   }
 
   .nav-open .main-nav {
@@ -318,7 +319,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 2rem;
+    padding: 0.8rem 1.5rem;
   }
 
   .logo {

@@ -74,7 +74,7 @@ async function fetchUserData(userId, token) {
 
 function setupReferralSharing(user) {
   const refCode = user.myReferralCode;
-  const link = `https://daily-tasks-556b.onrender.com/register.html?ref=${refCode}`;
+  const link = `https://lucky-pudding-453a5c.netlify.app/register.html?ref=${refCode}`;
   const msg = encodeURIComponent(`Join Daily Tasks and earn points! Use my referral: ${link}`);
 
   document.getElementById("shareBtn").addEventListener("click", () => {
@@ -178,10 +178,10 @@ function openTask(task) {
   document.getElementById("taskTitle").textContent = task.title;
   document.getElementById("taskInstructions").innerHTML = `
     <p>${task.instructions}</p>
-    <a href="${task.actionLink}" target="_blank" style="color:#000080;font-weight:bold;font-size:16px;margin-top:10px;display:inline-block;">
+    <a href="${task.actionLink}" target="_blank" style="color:#000080;font-weight:bold;font-size:16px;margin-top:18px;margin-bottom:18px;display:inline-block;">
       Go to Task
     </a>
-    <input type="file" id="screenshotUpload" accept="image/*" required style="display:block;margin-top:10px;" />
+    <input type="file" id="screenshotUpload" accept="image/*" required style="display:block;margin-bottom:18px;margin-top:10px;" />
     ${questionHtml}
   `;
   document.getElementById("taskModal").style.display = "flex";

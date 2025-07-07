@@ -4,6 +4,17 @@ document.addEventListener('DOMContentLoaded', () => {
   const daySelect = document.getElementById("dob-day");
   const yearSelect = document.getElementById("dob-year");
 
+  // NEW: capture referral from URL
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get("ref");
+  if (ref) {
+    const referralInput = document.getElementById("referral");
+    if (referralInput) {
+      referralInput.value = ref;
+    }
+    console.log("Referral code loaded from URL:", ref);
+  }
+
   // Populate day options
   for (let i = 1; i <= 31; i++) {
     const opt = document.createElement("option");
@@ -12,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     daySelect.appendChild(opt);
   }
 
-  // Populate year options (2014 down to 1950)
+  // Populate year options
   for (let y = 2014; y >= 1950; y--) {
     const opt = document.createElement("option");
     opt.value = y;
@@ -22,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!form) return;
 
-  console.log("Form submitted")
+  console.log("Form ready for submission")
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -62,3 +73,4 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
