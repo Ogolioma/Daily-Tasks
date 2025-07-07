@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!---Always include this line of code!!!-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="icon" href="images/DT.png" />
+    <link rel="stylesheet" href="css/general.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <title>Sign In | Daily Tasks</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: #fff;
+        color: #000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 1rem;
+      }
+      
+      .container {
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      .logo {
+        display: block;
+        -o-object-fit: contain;
+        object-fit: contain;
+        max-height: 52px;
+        max-height: var(--logo-height);
+        max-width: 100%;
+        margin: 0 auto;
+        height: 15rem;
+        width: 15rem;
+        justify-items: center;
+        align-items: center;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.3rem;
+        text-align: left;
+        font-size: 1.5rem;
+      }
+
+      input {
+        padding: 1.3rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 1.7rem;
+        width: 100%;
+      }
+
+      label {
+      font-weight: 500;
+      margin-top: 10px;
+      display: block;
+    }
+    .input-group {
+      position: relative;
+      margin-bottom: 15px;
+    }
+    .input-group input {
+      width: 100%;
+      padding: 10px 10px 10px 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 17px;
+      box-sizing: border-box;
+    }
+    .toggle-password {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 20px;
+      color: #444;
+    }
+
+      .forgot {
+        text-align: right;
+        font-size: 0.9rem;
+      }
+
+      .forgot a {
+        color: #000080;
+        text-decoration: none;
+        font-size: 1.4rem;
+      }
+
+      .forgot a:hover {
+        text-decoration: underline;
+      }
+
+      .btn {
+        background-color: #000080;
+        color: #fff;
+        padding: 1.25rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .btn:hover {
+        background-color: #00124d;
+      }
+
+      .signup {
+        margin-top: 1.3rem;
+        font-size: 1.25rem;
+      }
+
+      .signup a {
+        color: #000080;
+        text-decoration: none;
+        font-weight: 500;
+      }
+
+      .signup a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 500px) {
+        .container {
+          max-width: 100%;
+        }
+      }
+    </style>
+    <script defer src="js/sign-in.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <img class="logo" src="images/IMG_6104.png" />
+
+      <!-- <h2>Sign in</h2> -->
+      <form id="signInForm">
+        <label>Email address*</label>
+        <input type="email" id="email" placeholder="Enter your email" required />
+
+        <label>Password*</label>
+        <div class="input-group">
+        <input type="password" id="password" placeholder="Enter your password" required />
+        <span class="toggle-password" onclick="toggleVisibility('password', this)">
+          <ion-icon name="eye-outline"></ion-icon>
+        </span>
+        </div>
+
+        <div class="forgot">
+          <a href="/forgot-password.html">Forgot password?</a>
+        </div>
+
+        <button class="btn" type="submit">Continue</button>
+      </form>
+
+      <div class="signup">
+        Don’t have an account? <a href="/register.html">Sign up</a>
+      </div>
+    </div>
+
+      <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+  </body>
+</html>
