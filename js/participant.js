@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const message = document.getElementById("message").value;
 
     try {
-      const res = await fetch("http://localhost:5000/api/participant", {
+      const res = await fetch("https://daily-tasks-556b.onrender.com/api/participant", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

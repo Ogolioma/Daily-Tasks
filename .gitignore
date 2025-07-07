@@ -1,0 +1,9 @@
+# Node dependencies
+backend/node_modules
+
+# Environment variables
+backend/.env
+
+# OS / editor junk files
+.DS_Store
+Thumbs.db

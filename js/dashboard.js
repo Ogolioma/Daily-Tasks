@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (dropdown.style.display === "block") {
       try {
-        await fetch(`http://localhost:5000/api/users/${localUser.id}/notifications/mark-read`, {
+        await fetch(`https://daily-tasks-556b.onrender.com/api/users/${localUser.id}/notifications/mark-read`, {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -49,7 +49,7 @@ function showNotifications(user) {
 
 async function fetchUserData(userId, token) {
   try {
-    const res = await fetch(`http://localhost:5000/api/users/${userId}`, {
+    const res = await fetch(`https://daily-tasks-556b.onrender.com/api/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const freshUser = await res.json();
@@ -74,7 +74,7 @@ async function fetchUserData(userId, token) {
 
 function setupReferralSharing(user) {
   const refCode = user.myReferralCode;
-  const link = `http://localhost:5500/register.html?ref=${refCode}`;
+  const link = `https://daily-tasks-556b.onrender.com/register.html?ref=${refCode}`;
   const msg = encodeURIComponent(`Join Daily Tasks and earn points! Use my referral: ${link}`);
 
   document.getElementById("shareBtn").addEventListener("click", () => {
@@ -95,7 +95,7 @@ let selectedTaskId = null;
 
 async function loadTasks(freshUser) {
   try {
-    const res = await fetch("http://localhost:5000/api/tasks");
+    const res = await fetch("https://daily-tasks-556b.onrender.com/api/tasks");
     const tasks = await res.json();
     const container = document.getElementById("taskList");
     container.innerHTML = "";
@@ -202,7 +202,7 @@ async function submitTask() {
   formData.append("answers", JSON.stringify(answers));
 
   try {
-    const res = await fetch("http://localhost:5000/api/tasks/submit", {
+    const res = await fetch("https://daily-tasks-556b.onrender.com/api/tasks/submit", {
       method: "POST",
       headers: { Authorization: `Bearer ${token}` },
       body: formData,
@@ -236,7 +236,7 @@ async function loadCashoutHistory() {
   const container = document.getElementById("cashoutHistoryContainer");
 
   try {
-    const res = await fetch("http://localhost:5000/api/cashout/user", {
+    const res = await fetch("https://daily-tasks-556b.onrender.com/api/cashout/user", {
       headers: { Authorization: `Bearer ${token}` },
     });
     const history = await res.json();

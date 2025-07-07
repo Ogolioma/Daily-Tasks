@@ -14,7 +14,7 @@
   async function loadCashouts() {
     list.innerHTML = "<p>Loading...</p>";
     try {
-      const res = await fetch("http://localhost:5000/api/cashout/admin", {
+      const res = await fetch("https://daily-tasks-556b.onrender.com/api/cashout/admin", {
         headers: { Authorization: `Bearer ${adminToken}` }
       });
       if (res.status === 401) {
@@ -50,7 +50,7 @@
       if (!confirm("Mark this cashout as paid?")) return;
 
       try {
-        const res = await fetch(`http://localhost:5000/api/cashout/admin/${id}/mark-paid`, {
+        const res = await fetch(`https://daily-tasks-556b.onrender.com/api/cashout/admin/${id}/mark-paid`, {
           method: "PATCH",
           headers: { Authorization: `Bearer ${adminToken}` }
         });

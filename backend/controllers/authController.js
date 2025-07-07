@@ -57,7 +57,7 @@ exports.registerUser = async (req, res) => {
       }
     }
 
-    const link = `http://localhost:5500/create-password.html?token=${verificationToken}`;
+    const link = `https://daily-tasks-556b.onrender.com/create-password.html?token=${verificationToken}`;
     await sendEmail(email, "Confirm Your Email - Daily Tasks", `
       <div style="font-family:sans-serif;">
         <h2>Hello ${firstName},</h2>
@@ -106,7 +106,7 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    const link = `http://localhost:5500/reset-password.html?token=${token}`;
+    const link = `https://daily-tasks-556b.onrender.com/reset-password.html?token=${token}`;
     await sendEmail(email, "Reset Your Password", `
       <div style="font-family:sans-serif;">
         <h3>Password Reset</h3>
