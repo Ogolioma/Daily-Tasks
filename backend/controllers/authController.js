@@ -159,7 +159,7 @@ exports.loginUser = async (req, res) => {
     if (!isMatch) return res.status(400).json({ msg: "Incorrect password." });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
-    res.json({ token, user: { id: user._id, name: user.firstName, email: user.email, points: user.points }});
+    res.json({ token, user: { id: user._id, name: user.firstName, email: user.email, points: user.points, myReferralCode: user.myReferralCode }});
   } catch (err) {
     console.error(err);
     res.status(500).json({ msg: "Server error." });

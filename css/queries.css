@@ -87,6 +87,13 @@
     grid-template-columns: 1fr;
     row-gap: 4rem;
   }
+
+  .margin-right-sm,
+  .btn--outline {
+  flex-direction: column;
+    gap: 3rem;
+    align-items: center;
+}
 }
 
 /* ==============================
@@ -171,6 +178,10 @@
     flex-direction: column;
     gap: 2rem;
     align-items: center;
+  }
+
+  .cta-btn {
+    font-size: 2rem;
   }
 }
 

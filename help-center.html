@@ -1,85 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Help Center - Daily Tasks</title>
 
-    <!---Always include this line of code!!!-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap"
-      rel="stylesheet"
-    />
-
-    <link rel="icon" href="images/DT.png" />
-    <link rel="stylesheet" href="css/general.css" />
-    <link rel="stylesheet" href="css/styles.css" />
-    <link rel="stylesheet" href="css/queries.css"/>
-    <!--script defer src="js/script.js"></script-->
-
-    <title>Thank you | Daily Tasks</title>
-    <style>
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-
-      body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background-color: #f9f9f9;
-        color: #333;
-      }
-
-      .thank-you-wrapper {
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 40px 20px;
-      }
-
-      .thank-you-container {
-        background-color: #fff;
-        padding: 40px 30px;
-        max-width: 600px;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-        text-align: center;
-      }
-
-      .thank-you-container h1 {
-        font-size: 3.5rem;
-        color: #000080;
-        margin-bottom: 15px;
-      }
-
-      .thank-you-container p {
-        font-size: 2rem;
-        line-height: 1.6;
-        margin-bottom: 20px;
-      }
-
-
-      @media (max-width: 500px) {
-        .thank-you-container {
-          padding: 30px 20px;
-        }
-
-        .thank-you-container h1 {
-          font-size: 1.5rem;
-        }
-
-        .thank-you-container p {
-          font-size: 0.95rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Header -->
+  <link rel="icon" href="images/DT.png"/>
+  <link rel="stylesheet" href="css/general.css" />
+  <link rel="stylesheet" href="css/styles.css"/>
+  <link rel="stylesheet" href="css/queries.css"/>
+</head>
+<body>
+   <!-- Header -->
     <header class="header">
       <a href="/index.html">
         <img class="logo" src="/images/Daily task.PNG" />
@@ -101,18 +33,19 @@
       </button>
     </header>
 
-    <!-- Thank You Section -->
-    <div class="thank-you-wrapper">
-      <div class="thank-you-container">
-        <h1>Thank You!</h1>
-        <p>
-          We've received your request and our team will get back to you shortly!
-        </p>
-        <a href="/index.html" class="main-nav-link nav-cta">Back to Home</a>
-      </div>
-    </div>
+  <main class="container" style="padding:2rem;">
+    <h1 class="heading-secondary" style="margin-bottom:1rem;">Help Center</h1>
+    <p>
+      Need assistance? Our support team is here for you.
+    </p>
+    <ul style="margin-left:1.5rem;">
+      <li>Email us at <a href="mailto:daily.tasks@yahoo.com">daily.tasks@yahoo.com</a></li>
+      <li>Follow us on social platforms for updates.</li>
+      </ul>
+    <p>We usually respond within 24 hours.</p>
+  </main>
 
-    <!-- Footer -->
+ <!-- Footer -->
    <footer class="footer">
       <div class="container grid grid--footer">
         <div class="logo-col">
@@ -199,5 +132,5 @@
        <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
-  </body>
+</body>
 </html>
