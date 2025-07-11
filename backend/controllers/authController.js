@@ -57,7 +57,7 @@ exports.registerUser = async (req, res) => {
       }
     }
 
-    const link = `https://daily-tasks-556b.onrender.com/create-password.html?token=${verificationToken}`;
+    const link = `https://lucky-pudding-453a5c.netlify.app/create-password.html?token=${verificationToken}`;
     await sendEmail(email, "Confirm Your Email - Daily Tasks", `
       <div style="font-family:sans-serif;">
         <h2>Hello ${firstName},</h2>
