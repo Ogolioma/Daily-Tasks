@@ -1,9 +1,15 @@
 document.addEventListener("DOMContentLoaded", () => {
   const localUser = JSON.parse(localStorage.getItem("user"));
   const token = localStorage.getItem("token");
+  const loginTime = parseInt(localStorage.getItem("loginTime"), 10);
 
-  if (!localUser || !token) {
-    alert("You must be logged in.");
+  // ⏰ 24-hour session check
+  const now = Date.now();
+  if (!localUser || !token || !loginTime || (now - loginTime) > (24 * 60 * 60 * 1000)) {
+    alert("Your session has expired. Please log in again.");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("loginTime");
     return (window.location.href = "/sign-in.html");
   }
 
@@ -64,7 +70,7 @@ async function fetchUserData(userId, token) {
     localStorage.setItem("user", JSON.stringify(freshUser));
     showNotifications(freshUser);
 
-    await loadTasks(freshUser); // await to ensure tasks loaded before next
+    await loadTasks(freshUser);
     loadCashoutHistory();
   } catch (err) {
     console.error("❌ Failed to fetch user:", err);
@@ -74,7 +80,7 @@ async function fetchUserData(userId, token) {
 
 function setupReferralSharing(user) {
   const refCode = user.myReferralCode;
-  const link = `https://lucky-pudding-453a5c.netlify.app/register.html?ref=${refCode}`;
+  const link = `https://dailytasks.co/register.html?ref=${refCode}`;
   const msg = encodeURIComponent(`Join Daily Tasks and earn points! Use my referral: ${link}`);
 
   document.getElementById("shareBtn").addEventListener("click", () => {
@@ -120,7 +126,7 @@ async function loadTasks(freshUser) {
     if (!hasTasks) {
       container.innerHTML = "<p style='text-align:center;color:#555;'>No new tasks available. Please check back later.</p>";
     } else {
-      setupTaskToggle(); // ✅ ONLY call toggle after tasks loaded
+      setupTaskToggle();
     }
   } catch (err) {
     console.error("❌ Failed to load tasks:", err);
@@ -133,7 +139,6 @@ function setupTaskToggle() {
 
   if (tasks.length <= 5) return;
 
-  // Create toggle button
   const toggleBtn = document.createElement("button");
   toggleBtn.textContent = "Show All Tasks ▼";
   Object.assign(toggleBtn.style, {
@@ -307,9 +312,8 @@ if (logoutBtn) {
     e.preventDefault();
     localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("loginTime");
     alert("Logged out successfully.");
     window.location.href = "/sign-in.html";
   });
 }
-
-

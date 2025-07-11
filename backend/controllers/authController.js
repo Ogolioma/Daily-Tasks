@@ -57,7 +57,7 @@ exports.registerUser = async (req, res) => {
       }
     }
 
-    const link = `https://lucky-pudding-453a5c.netlify.app/create-password.html?token=${verificationToken}`;
+    const link = `https://dailytasks.co/create-password.html?token=${verificationToken}`;
     await sendEmail(email, "Confirm Your Email - Daily Tasks", `
       <div style="font-family:sans-serif;">
         <h2>Hello ${firstName},</h2>
@@ -106,7 +106,7 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
     await user.save();
 
-    const link = `https://daily-tasks-556b.onrender.com/reset-password.html?token=${token}`;
+    const link = `https://dailytasks.co/reset-password.html?token=${token}`;
     await sendEmail(email, "Reset Your Password", `
       <div style="font-family:sans-serif;">
         <h3>Password Reset</h3>

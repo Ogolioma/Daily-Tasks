@@ -1,15 +1,15 @@
 function toggleVisibility(inputId, iconSpan) {
-      const input = document.getElementById(inputId);
-      const icon = iconSpan.querySelector("ion-icon");
+  const input = document.getElementById(inputId);
+  const icon = iconSpan.querySelector("ion-icon");
 
-      if (input.type === "password") {
-        input.type = "text";
-        icon.setAttribute("name", "eye-off-outline");
-      } else {
-        input.type = "password";
-        icon.setAttribute("name", "eye-outline");
-      }
-    }
+  if (input.type === "password") {
+    input.type = "text";
+    icon.setAttribute("name", "eye-off-outline");
+  } else {
+    input.type = "password";
+    icon.setAttribute("name", "eye-outline");
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("signInForm");
@@ -17,8 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
 
     try {
       const res = await fetch("https://daily-tasks-556b.onrender.com/api/auth/login", {
@@ -36,9 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Save user info in localStorage
+      // ✅ Save user info, token, and loginTime (for 24-hour session control)
       localStorage.setItem("user", JSON.stringify(data.user));
       localStorage.setItem("token", data.token);
+      localStorage.setItem("loginTime", Date.now());
 
       alert("Login successful!");
       window.location.href = "dashboard.html";
