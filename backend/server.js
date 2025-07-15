@@ -1,58 +1,45 @@
-//backend server.js
+// backend/server.js
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-app.use(cors());
+
+// ✅ Secure CORS for production
+app.use(cors({
+  origin: ["https://dailytasks.co"],
+  credentials: true
+}));
+
 app.use(express.json());
 
-//const cashoutRoutes = require("./routes/cashout.routes");
-
-//Example test route
+// Test route
 app.get("/", (req, res) => {
   res.send("API is working");
 });
 
-//connect to MongoDB
+// Connect to MongoDB
 console.log("MONGO_URI =>", process.env.MONGO_URI);
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.log("MongoDB connection error:", err);
-  });
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.log("MongoDB connection error:", err));
 
-//start server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`server running on port ${PORT}`));
-////////////////
+// Log requests
 app.use((req, res, next) => {
-  console.log(`${req.method}
-    ${req.url}`);
-    next();
+  console.log(`${req.method} ${req.url}`);
+  next();
 });
-//////////
-const authRoutes = require("./routes/auth.routes");
-app.use("/api/auth", authRoutes);
 
-const userRoutes = require("./routes/user.routes");
-app.use("/api/users" , userRoutes)
-
+// Routes
+app.use("/api/auth", require("./routes/auth.routes"));
+app.use("/api/users", require("./routes/user.routes"));
 app.use("/api/tasks", require("./routes/task.routes"));
+app.use("/api/participant", require("./routes/participant.routes"));
+app.use("/api/cashout", require("./routes/cashout.routes"));
+app.use("/api/admin", require("./routes/admin.routes"));
+app.use("/api/proofs", require("./routes/proof.routes"));
 
-const participantRoutes = require("./routes/participant.routes")
-app.use("/api/participant", participantRoutes);
-
-const cashoutRoutes = require("./routes/cashout.routes");
-app.use("/api/cashout", cashoutRoutes);
-
-const adminRoutes = require("./routes/admin.routes");
-app.use("/api/admin", adminRoutes);
-
-const proofRoutes = require("./routes/proof.routes");
-app.use("/api/proofs", proofRoutes)
-
-const sendMail = require("./utils/sendMail");
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
