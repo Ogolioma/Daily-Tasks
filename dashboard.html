@@ -1,0 +1,124 @@
+<!DOCTYPE html><html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Dashboard</title>
+
+
+    <link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#000080" />
+    <link rel="icon" href="/images/DT.png">
+    <link rel="apple-touch-icon" href="/images/DT.png" />
+    <link rel="stylesheet" href="css/general.css" />
+    <link rel="stylesheet" href="css/styles.css"/>
+    <link rel="stylesheet" href="css/dashboard.css" />
+    <link rel="stylesheet" href="css/queries.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  </head>
+  <body>
+    <header class="header">
+      <a href="/index.html">
+        <img class="logo" src="/images/Daily task.PNG" />
+        
+      </a>
+      <nav class="main-nav">
+        <ul class="main-nav-list">
+
+          <div class="notification-bell">
+  <i class="fas fa-bell"></i>
+  <span class="notification-count" id="notifCount">0</span>
+  <div id="notifDropdown" class="notif-dropdown" style="display: none;">
+  <ul id="notifList"></ul>
+</div>
+</div>
+
+          <li><a class="main-nav-link" href="/find-participants.html">Find Participants</a></li>
+          <li><a class="main-nav-link dashboard" href="#" id="logoutBtn">Log Out</a></li>
+        </ul>
+      </nav>
+
+      <button class="btn-mobile-nav">
+        <ion-icon class="icon-mobile-nav" name="menu-outline"></ion-icon>
+        <ion-icon class="icon-mobile-nav" name="close-outline"></ion-icon>
+      </button>
+
+    </header>
+    <main class="dashboard-container">
+      <section class="profile-panel">
+        <h2>Hello, <span id="welcomeName"></span></h2>
+        <p><strong>Email:</strong> <span id="userEmail"></span></p><br/>
+        <p><strong>Phone:</strong> <span id="userPhone"></span></p><br/>
+        <h4>Your Referral Code:</h4>
+        <div class="referral-code" id="userReferral"></div>
+        <div class="share-container">
+  <p>Invite your friends and earn 10 points per Sign Up!</p><br/>
+  <button id="shareBtn">Share your referral link</button>
+  <div class="social-icons" id="socialIcons" style="display: none;">
+  <a id="shareWhatsapp" target="_blank">
+    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/whatsapp.svg" alt="WhatsApp" />
+  </a>
+  <a id="shareFacebook" target="_blank">
+    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg" alt="Facebook" />
+  </a>
+  <a id="shareTwitter" target="_blank">
+    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/x.svg" alt="X" />
+  </a>
+  <a id="shareInstagram" target="_blank">
+    <img src="https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg" alt="Instagram" />
+  </a><br/>
+  <a id="copyLink">
+    <ion-icon name="clipboard-outline"></ion-icon> 
+    Copy Link
+  </a>
+</div>
+      </section>
+
+       <section class="task-section">
+    <h2 class="task-heading">Available Tasks</h2><br/>
+    <div id="taskList"></div>
+
+    
+<!-- Modal for Task Details -->
+<div class="task-modal" id="taskModal">
+  <div class="task-modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h3 id="taskTitle" class="task-title">Task Instructions</h3><br />
+    <p id="taskInstructions" class="task-inst"></p>
+    <br />
+    <!--input type="file" id="screenshotUpload" accept="image/*" required /-->
+    <button id="submitTaskBtn" onclick="submitTask()">Submit Evidence</button><br/>
+  </div>
+</div>
+  </section>
+      
+      <section class="points-panel">
+    <h2 class="earning-header">My Earning</h2><br/><br/>
+    <div class="earnings-ring">
+    <canvas id="earningsRing" width="120" height="120"></canvas>
+    <div class="points" id="userPoints"></div>
+    </div>
+
+    <div class="button-group">
+  <button id="cashout-btn" class="btn-cashout" disabled>💰 Cash Out</button>
+  <button id="viewHistoryBtn" class="btn-history">📜 Cashout History</button>
+</div>
+<div id="cashoutHistoryContainer" style="display:none;margin-top:20px;"></div>
+
+
+    <!--Cashout Box-->
+  <div class="info-box">Cash out at 1000 points</div>
+  <div class="info-box">Every 1000 points = ₦5,000</div>
+  <div class="info-box">Payments will be processed within 24 hours</div>
+</div>
+  </section>
+
+
+</main>
+<script src="js/dashboard.js"></script>
+<script src="js/script.js"></script>
+<script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+<script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+
+  </body>
+</html>

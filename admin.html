@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <link rel="icon" href="images/DT.png"/>
+  <title>Admin Cashout Management</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #000080;
+      margin-bottom: 30px;
+    }
+
+    .cashout-item {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 15px;
+      border-left: 6px solid #000080;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+    }
+
+    .cashout-item.paid {
+      border-left-color: green;
+    }
+
+    .cashout-item.pending {
+      border-left-color: orange;
+    }
+
+    .cashout-item strong {
+      font-size: 18px;
+    }
+
+    .cashout-item small {
+      color: #666;
+    }
+
+    button.approve-btn {
+      background: green;
+      color: white;
+      border: none;
+      padding: 10px 14px;
+      margin-top: 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button.approve-btn:hover {
+      background: darkgreen;
+    }
+
+    #status {
+      text-align: center;
+      margin-bottom: 20px;
+      font-weight: bold;
+      color: #d63031;
+    }
+  </style>
+</head>
+<body>
+  <h1>Admin - Manage Cashout Requests</h1>
+  <div id="status"></div>
+  <div id="cashoutList"></div>
+
+  <script src="js/admin.js"></script>
+</body>
+</html>
+

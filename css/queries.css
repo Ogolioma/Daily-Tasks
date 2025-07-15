@@ -1,0 +1,346 @@
+/* ==============================
+   FONT & ROOT SCALE
+============================== */
+@media (max-width: 75em) { /* 1200px */
+  html { font-size: 66.25%; }
+}
+@media (max-width: 59em) { /* 944px */
+  html { font-size: 55%; }
+}
+@media (max-width: 44em) { /* 704px */
+  html { font-size: 45%; }
+}
+@media (max-width: 35em) { /* 560px */
+  html { font-size: 52%; }
+}
+@media (max-width: 25em) { /* 400px */
+  html { font-size: 40%; }
+}
+
+/* ==============================
+   HERO SECTION
+============================== */
+@media (max-width: 59em) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 4rem;
+  }
+
+  .hero-image {
+    width: 75%;
+    margin: 0 auto;
+  }
+
+  .hero-text-box {
+    order: 2;
+  }
+}
+
+/* ==============================
+   GRID SECTIONS
+============================== */
+@media (max-width: 59em) {
+  .grid--3-cols,
+  .grid--4-cols,
+  .grid--5-cols {
+    grid-template-columns: 1fr 1fr;
+    gap: 3.2rem;
+  }
+}
+@media (max-width: 44em) {
+  .grid--3-cols,
+  .grid--4-cols,
+  .grid--5-cols,
+  .grid--2-cols {
+    grid-template-columns: 1fr;
+    gap: 2.4rem;
+  }
+}
+
+/* ==============================
+   WHY US HEADINGS
+============================== */
+@media (max-width: 59em) {
+  .heading-secondary {
+    font-size: 3.2rem;
+    padding: 0 4rem;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+    line-height: 1.2;
+  }
+}
+
+/* ==============================
+   TESTIMONIAL SECTION
+============================== */
+@media (max-width: 59em) {
+  .section-testimonials {
+    grid-template-columns: 1fr;
+  }
+
+  .testimonial-container {
+    padding: 4rem 2rem;
+  }
+
+  .testimonials {
+    grid-template-columns: 1fr;
+    row-gap: 4rem;
+  }
+
+  .margin-right-sm,
+  .btn--outline {
+  flex-direction: column;
+    gap: 3rem;
+    align-items: center;
+}
+}
+
+/* ==============================
+   HOW IT WORKS SECTION
+============================== */
+@media (max-width: 59em) {
+  .steps {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+}
+@media (max-width: 44em) {
+  .steps {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  .task-card {
+  background: #f0f4ff;
+  border-left: 4px solid #000080;
+  padding: 16px;
+  margin-bottom: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.task-card h4 {
+  font-size: 1.9rem;
+  font-weight: 500;
+}
+
+.task-card:hover {
+  background: #dfe9ff;
+  transform: scale(1.02);
+}
+
+.task-points {
+  color: #000;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.task-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  justify-content: center;
+  align-items: center;
+}
+
+.task-modal-content {
+  background: white;
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  border-radius: 12px;
+  position: relative;
+}
+
+.task-title {
+  font-weight: 600;
+  font-size: 2.3rem;
+  color: #000080;
+}
+.task-inst {
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+}
+}
+
+/* ==============================
+   CTA SECTION
+============================== */
+@media (max-width: 59em) {
+  .cta-buttons {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .cta-btn {
+    font-size: 2rem;
+  }
+}
+
+/* ==============================
+   FOOTER SECTION
+============================== */
+@media (max-width: 59em) {
+  .grid--footer {
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+  }
+}
+@media (max-width: 44em) {
+  .grid--footer {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 2.4rem;
+  }
+
+  .logo-col,
+  .address-col,
+  .nav-col {
+    align-items: center;
+    justify-content: center;
+  }
+
+  .footer-logo,
+  .social-links {
+    margin: 0 auto;
+  }
+
+  .footer-nav,
+  .contacts {
+    align-items: center;
+  }
+
+  .social-links {
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+/* ==============================
+   SMALLER SCREENS
+============================== */
+@media (max-width: 35em) {
+  .hero-image {
+    width: 85%;
+  }
+
+  .heading-secondary {
+    font-size: 3rem;
+    padding: 0 2rem;
+  }
+
+  .heading-primary {
+    font-size: 4rem;
+  }
+
+  .hero-description {
+    font-size: 2rem;
+    padding: 0 2rem;
+  }
+}
+
+@media (max-width: 35em) {
+  .heading-primary {
+    font-size: 3.6rem;
+  }
+
+  .hero-description {
+    font-size: 1.8rem;
+  }
+}
+
+/* ==============
+   MOBILE NAV
+============== */
+.btn-mobile-nav {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: none;
+  z-index: 999;
+}
+
+.icon-mobile-nav {
+  width: 3.2rem;
+  height: 3.2rem;
+  color: #000080;
+}
+
+.icon-mobile-nav[name="close-outline"] {
+  display: none;
+}
+
+@media (max-width: 59em) {
+  .btn-mobile-nav {
+    display: block;
+  }
+
+  .main-nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 50vh;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: -2px 0 12px rgba(0,0,0,0.1);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 3rem;
+    transition: all 0.3s ease-in;
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+    z-index: 998;
+    padding: 5rem 0;
+  }
+
+  .nav-open .main-nav {
+    transform: translateX(0);
+    opacity: 0.9;
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .nav-open .icon-mobile-nav[name="menu-outline"] {
+    display: none;
+  }
+
+  .nav-open .icon-mobile-nav[name="close-outline"] {
+    display: block;
+  }
+
+  .main-nav-list {
+    flex-direction: column;
+    gap: 4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1.5rem;
+  }
+
+  .logo {
+    margin: 0;
+    max-width: 120px;
+  }
+
+  .btn-mobile-nav {
+    display: block;
+  }
+}
+
+
