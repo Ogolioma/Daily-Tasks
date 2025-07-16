@@ -1,27 +1,24 @@
-const nodemailer = require("nodemailer");
+// backend/utils/sendMail.js
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 require("dotenv").config();
 
-const transporter = nodemailer.createTransport({
-  host: "smtp-relay.brevo.com",
-  port: 587,
-  secure: false,
-  auth: {
-    user: process.env.BREVO_SMTP_USER,
-    pass: process.env.BREVO_SMTP_PASS
-  }
-});
+const client = SibApiV3Sdk.ApiClient.instance;
+const apiKey = client.authentications['api-key'];
+apiKey.apiKey = process.env.BREVO_API_KEY;
+
+const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 
 async function sendMail(to, subject, html) {
   try {
-    const info = await transporter.sendMail({
-      from: '"Daily Tasks" <dailytasksoffice@gmail.com>',
-      to,
+    const data = await apiInstance.sendTransacEmail({
+      sender: { name: "Daily Tasks", email: "dailytasksoffice@gmail.com" },
+      to: [{ email: to }],
       subject,
-      html
+      htmlContent: html
     });
-    console.log(`✅ Email sent to ${to} (Message ID: ${info.messageId})`);
+    console.log(`✅ Email sent to ${to} (Message ID: ${data.messageId})`);
   } catch (err) {
-    console.error(`❌ Email failed to ${to}:`, err);
+    console.error(`❌ Email failed to ${to}:`, err.response?.body || err);
   }
 }
 
