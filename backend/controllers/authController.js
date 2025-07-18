@@ -147,7 +147,7 @@ exports.resetPassword = async (req, res) => {
 exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email:email.toLowercase() });
+    const user = await User.findOne({ email:email.toLowerCase() });
     if (!user) return res.status(400).json({ msg: "User not found." });
     if (!user.emailVerified) return res.status(400).json({ msg: "Verify your email first." });
 
