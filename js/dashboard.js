@@ -120,7 +120,9 @@ function setupReferralSharing(user) {
   });
 }
 
+
 let selectedTaskId = null;
+let currentQuestions = [];
 
 async function loadTasks(freshUser) {
   try {
@@ -194,8 +196,11 @@ function openTask(task) {
 
   let questionHtml = "";
   if (task.questions && task.questions.length > 0) {
-    questionHtml = "<h4></h4>";
-    task.questions.forEach((q, idx) => {
+    // Shuffle and pick only 3 questions
+    const shuffled = [...task.questions].sort(() => 0.5 - Math.random());
+    currentQuestions = shuffled.slice(0, 2);
+
+    currentQuestions.forEach((q, idx) => {
       questionHtml += `
         <label style="font-size:15px;font-weight:500;margin-top:8px;">${q.question}</label>
         <input type="text" class="task-answer" data-idx="${idx}" style="display:block;width:100%;margin-bottom:10px;">
@@ -242,7 +247,6 @@ async function submitTask() {
 
     alert(data.msg);
 
-    // ✅ Always use fallback id
     const userRes = await fetch(`https://daily-tasks-556b.onrender.com/api/users/${userId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
