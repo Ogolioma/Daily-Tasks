@@ -1,3 +1,4 @@
+//sign-in.js
 function toggleVisibility(inputId, iconSpan) {
   const input = document.getElementById(inputId);
   const icon = iconSpan.querySelector("ion-icon");
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = document.getElementById("email").value.trim().toLowerCase();
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
 
     try {

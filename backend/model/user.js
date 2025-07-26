@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
   // Basic Info
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
-  email: { type: String, required: true, unique: true, lowercase:true },
+  email: { type: String, required: true, unique: true },
   phone: { type: String, required: true },
   gender: { type: String, enum: ["Male", "Female"], required: true },
   dob: { type: Date, required: true },
@@ -40,4 +40,5 @@ resetPasswordExpires: Date,
 });
 
 module.exports = mongoose.model("User", userSchema);
+
 

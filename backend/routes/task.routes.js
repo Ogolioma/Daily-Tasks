@@ -3,9 +3,10 @@ const router = express.Router();
 const Task = require("../model/Task");
 const User = require("../model/user");
 const Proof = require("../model/proof");
+const AssignedQuestion = require("../model/assignedQuestion");
 const auth = require("../middleware/auth");
 const upload = require("../middleware/upload");
-const sendMail = require("../utils/sendMail"); // ✅ import your mailer
+const sendMail = require("../utils/sendMail");
 
 // ------------------ GET ALL TASKS ------------------
 router.get("/", async (req, res) => {
@@ -18,13 +19,38 @@ router.get("/", async (req, res) => {
   }
 });
 
+// ------------------ ASSIGN QUESTIONS ------------------
+router.post("/assign-questions/:taskId", auth, async (req, res) => {
+  try {
+    const { taskId } = req.params;
+    const task = await Task.findById(taskId);
+    if (!task || !task.questions || task.questions.length === 0) {
+      return res.status(404).json({ msg: "No questions to assign." });
+    }
+
+    // Randomly pick 2 or all if fewer
+    const shuffled = task.questions.sort(() => 0.5 - Math.random());
+    const selected = shuffled.slice(0, Math.min(2, task.questions.length));
+
+    // Save assignment
+    const assigned = await AssignedQuestion.findOneAndUpdate(
+      { userId: req.user.id, taskId },
+      { questions: selected },
+      { upsert: true, new: true }
+    );
+
+    res.json({ questions: assigned.questions });
+  } catch (err) {
+    console.error("❌ Assign error:", err);
+    res.status(500).json({ msg: "Failed to assign questions" });
+  }
+});
+
 // ------------------ SUBMIT TASK ------------------
 router.post("/submit", auth, upload.single("screenshot"), async (req, res) => {
   try {
-    console.log("🚀 FILE RECEIVED:", req.file);
-    console.log("📦 BODY:", req.body);
-
     const { taskId, answers } = req.body;
+
     if (!taskId) return res.status(400).json({ msg: "Task ID missing." });
 
     const task = await Task.findById(taskId);
@@ -41,7 +67,7 @@ router.post("/submit", auth, upload.single("screenshot"), async (req, res) => {
       return res.status(400).json({ msg: "Screenshot upload failed." });
     }
 
-    // ✅ Answers validation
+    // ✅ Validate answers
     if (task.questions && task.questions.length > 0) {
       let parsedAnswers = [];
       try {
@@ -50,11 +76,18 @@ router.post("/submit", auth, upload.single("screenshot"), async (req, res) => {
         return res.status(400).json({ msg: "Invalid answers format." });
       }
 
-      for (let i = 0; i < task.questions.length; i++) {
-        const expected = (task.questions[i].answer || "").trim().toLowerCase();
+      const assigned = await AssignedQuestion.findOne({
+        userId: req.user.id,
+        taskId,
+      });
+
+      const checkAgainst = assigned ? assigned.questions : task.questions;
+
+      for (let i = 0; i < checkAgainst.length; i++) {
+        const expected = (checkAgainst[i].answer || "").trim().toLowerCase();
         const provided = (parsedAnswers[i] || "").trim().toLowerCase();
         if (expected && expected !== provided) {
-          return res.status(400).json({ msg: `Answer to question ${i+1} is incorrect.` });
+          return res.status(400).json({ msg: `Answer to question ${i + 1} is incorrect.` });
         }
       }
     }
@@ -65,16 +98,14 @@ router.post("/submit", auth, upload.single("screenshot"), async (req, res) => {
     user.notifications.push({
       message: `You completed "${task.title}" and earned ${task.points} points.`,
     });
-
     await user.save();
 
-    // ✅ Save proof
     const proof = new Proof({
       user: user._id,
       email: user.email,
       task: task._id,
       screenshotUrl: req.file.path,
-      pointsAwarded: task.points
+      pointsAwarded: task.points,
     });
     await proof.save();
 
@@ -83,7 +114,6 @@ router.post("/submit", auth, upload.single("screenshot"), async (req, res) => {
       points: user.points,
       screenshotUrl: req.file.path,
     });
-
   } catch (err) {
     console.error("❌ Task submit error:", err);
     res.status(500).json({ msg: "Error submitting task", error: err.message });
@@ -96,7 +126,6 @@ router.post("/add", async (req, res) => {
     const { title, instructions, points, actionLink, questions } = req.body;
     const task = await Task.create({ title, instructions, points, actionLink, questions });
 
-    // ✅ notify all users by email
     const users = await User.find({}, "email firstName");
     for (const user of users) {
       await sendMail(
@@ -104,7 +133,7 @@ router.post("/add", async (req, res) => {
         "🆕 New Task Available on Daily Tasks!",
         `
           <div style="font-family:sans-serif;">
-            <h2>Hello ${user.firstName || ''},</h2>
+            <h2>Hello ${user.firstName || ""},</h2>
             <p>A new task <strong>"${title}"</strong> has been added to your dashboard.</p>
             <p>Log in now to complete it and earn ${points} points.</p>
             <a href="https://dailytasks.co/sign-in.html" style="background:#000080;color:#fff;padding:10px 20px;border-radius:5px;text-decoration:none;">
@@ -113,7 +142,6 @@ router.post("/add", async (req, res) => {
           </div>
         `
       );
-      console.log(`📧 Sent new task email to ${user.email}`);
     }
 
     res.json({ msg: "Task added & notifications sent!", task });

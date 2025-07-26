@@ -144,10 +144,36 @@ exports.resetPassword = async (req, res) => {
 };
 
 // ✅ Login
-exports.loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
+  console.log("login route hit");
+  console.log("request body:", req.body);
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email:email.toLowerCase() });
+
+    const user = await User.findOne({
+      email: { $regex: new RegExp(`^${email}$`, 'i') },
+    });
+
+    if (!user) return res.status(400).json({ msg: "User not found." });
+    if (!user.emailVerified) return res.status(400).json({ msg: "Verify your email first." });
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) return res.status(400).json({ msg: "Incorrect password." });
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    res.json({
+      token,
+      user,
+    });
+  } catch (err) {
+    console.error("Login error:", err);
+    res.status(500).json({ msg: "Login failed. Try again." });
+  }
+};
+/*exports.loginUser = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
     if (!user) return res.status(400).json({ msg: "User not found." });
     if (!user.emailVerified) return res.status(400).json({ msg: "Verify your email first." });
 
@@ -160,4 +186,4 @@ exports.loginUser = async (req, res) => {
     console.error(err);
     res.status(500).json({ msg: "Server error." });
   }
-};
+};*/
