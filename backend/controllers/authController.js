@@ -144,7 +144,7 @@ exports.resetPassword = async (req, res) => {
 };
 
 // ✅ Login
-const loginUser = async (req, res) => {
+exports.loginUser = async (req, res) => {
   console.log("login route hit");
   console.log("request body:", req.body);
   try {

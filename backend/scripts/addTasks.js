@@ -17,20 +17,27 @@ mongoose.connect(process.env.MONGO_URI)
       {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,<br/><br/> subscribe to the channel, turn on notification and share.<br/><br/> Upload screenshot showing you watched the video to end, subscribed and turned on notification. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/GbSFoYEF_4U?si=cdSZ78Msied6slr_",
+        actionLink: "https://youtu.be/GbSFoYEF_4U?si=Uts2s_a5liGT4S9I",
         points: 7,
         questions: [
-          { question: "What do you get when someone signs up with your link?", answer: "commission" },
-          {question: "You deserve to earn, You deserve _______ ?", answer: "freedom"}
+          { question: "You ________ to earn, you deserve freedom?", answer: "deserve" },
+          {question: "_______ don't always show up in suits and ties?", answer: "opportunities"},
+           { question: "You are not just maximizing time, you are ________ time into income?", answer: "flipping" },
+          {question: "You don't need a _______ to make money?", answer: "job"},
+          {question: "He doesn't work a  _______ job?", answer: "traditional"}
         ]
       },
       {
         title: "Watch Video",
         instructions:"Watch the video to the end without skipping,<br/><br/> share and like the video,then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/Oz-eLGeQo7w",
+        actionLink: "https://youtu.be/t4NWv3tShcA?si=-9C0yZGNfPYHQlHQ",
         points: 6,
         questions: [
-          { question: "Don't wait for motivation, build _______?", answer: "discipline" }
+          { question: "What's missing isn't money, it's ________ ?", answer: "motion" },
+          {question: "Don't _______ it. Start messy", answer: "overthink"},
+           { question: "How much in dollars does Sandra earn per month? (write only in figures/numbers)", answer: "800" },
+          {question:"Where is the real money in?", answer: "discipline"},
+          {question: "How many ways where listed in the video? (write only in figures/numbers)", answer: "10"}
         ]
       },
       {
@@ -39,8 +46,11 @@ mongoose.connect(process.env.MONGO_URI)
         actionLink: "https://youtu.be/57y35YcfUo4",
         points: 6,
         questions: [
-          { question: "Your attention span is _______?", answer: "currency" },
-          { question: "Building _______ momentum?", answer: "unstoppable" }
+           { question: "Always look for ________ ?", answer: "leverage" },
+          {question: "How much should you not blow on airpods (write only in figures/numbers)", answer: "500"},
+           { question: "what should you not treat your income like", answer: "trophy" },
+          {question:"_________ is procastination in a tuxedo", answer: "perfectionism"},
+          {question: "How many ways where listed in the video? (write only in figures/numbers)", answer: "10"}
         ]
       },
       {
