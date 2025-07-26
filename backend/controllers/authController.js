@@ -170,6 +170,8 @@ exports.loginUser = async (req, res) => {
     res.status(500).json({ msg: "Login failed. Try again." });
   }
 };
+
+
 /*exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;

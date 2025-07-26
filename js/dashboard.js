@@ -1,39 +1,62 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const localUser = JSON.parse(localStorage.getItem("user"));
-  const token = localStorage.getItem("token");
-  const loginTime = parseInt(localStorage.getItem("loginTime"), 10);
+  initDashboard();
+});
 
-  // ⏰ 24-hour session check
-  const now = Date.now();
-  if (!localUser || !token || !loginTime || (now - loginTime) > (24 * 60 * 60 * 1000)) {
-    alert("Your session has expired. Please log in again.");
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
-    localStorage.removeItem("loginTime");
-    return (window.location.href = "/sign-in.html");
+async function initDashboard() {
+  try {
+    const userString = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    const loginTime = parseInt(localStorage.getItem("loginTime"), 10);
+
+    // 🔒 Ensure session is valid
+    if (!userString || !token || !loginTime || (Date.now() - loginTime) > (24 * 60 * 60 * 1000)) {
+      alert("Your session has expired. Please log in again.");
+      localStorage.clear();
+      return window.location.href = "/sign-in.html";
+    }
+
+    const localUser = JSON.parse(userString);
+
+    // 🧠 Sanity check for .id
+    const userId = localUser.id || localUser._id;
+    if (!userId) throw new Error("User ID missing.");
+
+    await fetchUserData(userId, token);
+    setupReferralSharing(localUser);
+    setupNotificationDropdown(userId, token);
+  } catch (err) {
+    console.error("❌ Error during dashboard init:", err);
+    alert("Couldn't load your data. Please log in again.");
+    localStorage.clear();
+    window.location.href = "/sign-in.html";
   }
+}
 
-  fetchUserData(localUser.id, token);
-  setupReferralSharing(localUser);
+function setupNotificationDropdown(userId, token) {
+  const bell = document.querySelector(".notification-bell");
+  const dropdown = document.getElementById("notifDropdown");
+  const notifCount = document.getElementById("notifCount");
 
-  document.querySelector(".notification-bell").addEventListener("click", async () => {
-    const dropdown = document.getElementById("notifDropdown");
-    dropdown.style.display = dropdown.style.display === "none" ? "block" : "none";
+  if (!bell || !dropdown || !notifCount) return;
 
+  bell.addEventListener("click", async () => {
+    dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
     if (dropdown.style.display === "block") {
       try {
-        await fetch(`https://daily-tasks-556b.onrender.com/api/users/${localUser.id}/notifications/mark-read`, {
+        await fetch(`https://daily-tasks-556b.onrender.com/api/users/${userId}/notifications/mark-read`, {
           method: "PATCH",
-          headers: { Authorization: `Bearer ${token}` }
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
         });
-        document.getElementById("notifCount").textContent = "0";
+        notifCount.textContent = "0";
       } catch (err) {
         console.error("❌ Failed to mark notifications as read:", err);
       }
     }
   });
-});
-
+}
+////////////////////////////////////////////////////////////////////////////////
 function showNotifications(user) {
   const list = document.getElementById("notifList");
   list.innerHTML = "";

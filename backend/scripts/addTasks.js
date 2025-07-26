@@ -43,69 +43,92 @@ mongoose.connect(process.env.MONGO_URI)
       {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping, <br/><br/>share and like the video, then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/57y35YcfUo4",
+        actionLink: "https://youtu.be/KLG6Jtw_uUo?si=CXR4Ndpt-F7AP5cT",
         points: 6,
         questions: [
            { question: "Always look for ________ ?", answer: "leverage" },
           {question: "How much should you not blow on airpods (write only in figures/numbers)", answer: "500"},
            { question: "what should you not treat your income like", answer: "trophy" },
           {question:"_________ is procastination in a tuxedo", answer: "perfectionism"},
-          {question: "How many ways where listed in the video? (write only in figures/numbers)", answer: "10"}
+          {question: "Make __________ a habit, not an aferthought", answer: "reinvestment"}
         ]
       },
       {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,<br/><br/> share and like the video, then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/yHZJbeyrYHg",
+        actionLink: "https://youtu.be/aOUoHqA4A0o?si=d9gHqOwMA4kQNL_t",
         points: 6,
         questions: [
-          { question: "Let's talk about _______ potholes?", answer: "financial" },
-          { question: "You've learned how to grow your money <br/><br/>through budgeting, _______ and protecting your cash?", answer: "planning" }
+          { question: "Managing money isn't just about ________ ?", answer: "math" },
+          {question: "You just need clarity, _______, and the courage to take small steps consistently", answer: "discipline"},
+           { question: "Stop treatin money like a _________?", answer: "mystery" },
+          {question:"start treating money like a _________ ", answer: "mission"},
+          {question: "that could be __________ your expenses", answer: "tracking"}
         ]
       },
       {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,<br/><br/> share and like the video, then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/wQ1WoCug1Ms?si=W36EyzajbLdI09kH",
+        actionLink: "https://youtu.be/wQ1WoCug1Ms?si=Y0pzu7C6MTtWm-Uv",
         points: 4,
         questions: [
-          { question: "Which sites should you jump on?", answer: "microtask" }
+           { question: "Focus on ________ that pay more ?", answer: "tasks" },
+          {question: "stick to _______ with solid reputation", answer: "platforms"},
+           { question: "building your lazy _______ stream", answer: "income" },
+          {question:"ride this easy _______ wave together ", answer: "money"},
+          {question: "$100 is totally ___________ ", answer: "doable"}
         ]
       },
        {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,<br/><br/> share and like the video, then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/Oz-eLGeQo7w?si=5nUmJv0T805BHkNT",
+        actionLink: "https://youtu.be/Oz-eLGeQo7w?si=N7cu8jK_venSI10R",
         points: 4,
         questions: [
-          { question: "__________ your sign up just right?", answer: "time" }
+           { question: "Be smart with your ________ details", answer: "demographic" },
+          {question: "increases your chances of ______ the waitlist", answer: "bypassing"},
+           { question: " _______ your sign up just right", answer: "time" },
+          {question:"_______ it smart and be intentional ", answer: "play"},
+          {question: "___________ values diversity", answer: "prolific"}
         ]
       },
        {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,<br/><br/> share and like the video, then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/57y35YcfUo4?si=ISU6aCB5ndjsfEw_",
+        actionLink: "https://youtu.be/57y35YcfUo4?si=ujXcWvgbdneayN1c",
         points: 4,
         questions: [
-          { question: "Tell me, what's your first__________ ?", answer: "move" }
+           { question: "turn your ________ into a system", answer: "hustle" },
+          {question: "a ________ in, I was selling digital products", answer: "year"},
+           { question: " it's a _______, doable path", answer: "proven" },
+          {question:"What should you turn into income? ", answer: "knowledge"},
+          {question: "The _______ thing in your way is not starting", answer: "only"}
         ]
       },
        {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,<br/><br/> share and like the video, then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/yHZJbeyrYHg?si=gBuKMvyrVt3cHIV3",
+        actionLink: "https://youtu.be/yHZJbeyrYHg?si=rzRsrIgGvgdFXw4A",
         points: 4,
         questions: [
-          { question: "All you need is internet access, and a bit of ______ believe?", answer: "self" }
+          { question: "you don't need to be a ________ genius", answer: "tech" },
+          {question: "you can help them ________ from your laptop", answer: "write"},
+           { question: " things began to ____________ ", answer: "shift" },
+          {question:"these _________ actually work ", answer: "hustles"},
+          {question: "All you need is internet access, and a bit of self _______", answer: "believe"}
         ]
       },
        {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,<br/><br/> share and like the video, then upload proof of completed task and answer the questions.<br/><br/> Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/XFcb9P0kTQw?si=rYynGrBMk60K1N-7",
+        actionLink: "https://youtu.be/XFcb9P0kTQw?si=nQeonvrgSTlHNuie",
         points: 4,
         questions: [
-          { question: "What ______ are you diving into this week?", answer: "skill" }
+          { question: "What should you do to as many people as possible?", answer: "reach" },
+          {question: "with the right ________ set and hustle", answer: "skill"},
+           { question: " what ____________ are you diving into this week", answer: "skill" },
+          {question:"if you're _________ of the fluff ", answer: "tired"},
+          {question: " show upoften and _________ consistently", answer: "deliver"}
         ]
       }
     ]);
