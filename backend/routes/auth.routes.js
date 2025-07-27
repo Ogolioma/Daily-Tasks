@@ -7,7 +7,7 @@ const {
 } = require("../controllers/authController");
 
 router.post("/register", registerUser);
-router.post("/create-password", createPassword);
+router.post("/confirm-email/:token", createPassword);
 router.post("/sign-in", loginUser);
 
 module.exports = router;
