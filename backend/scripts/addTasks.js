@@ -35,9 +35,9 @@ mongoose.connect(process.env.MONGO_URI)
         questions: [
           { question: "What's missing isn't money, it's ________ ?", answer: "motion" },
           {question: "Don't _______ it. Start messy", answer: "overthink"},
-           { question: "How much in dollars does Sandra earn per month? (write only in figures/numbers)", answer: "800" },
+           { question: "How much in dollars does Sandra earn per month? (write only in words)", answer: "eight hundred" },
           {question:"Where is the real money in?", answer: "discipline"},
-          {question: "How many ways where listed in the video? (write only in figures/numbers)", answer: "10"}
+          {question: "How many ways where listed in the video? (write only in words)", answer: "ten"}
         ]
       },
       {
@@ -47,7 +47,7 @@ mongoose.connect(process.env.MONGO_URI)
         points: 6,
         questions: [
            { question: "Always look for ________ ?", answer: "leverage" },
-          {question: "How much should you not blow on airpods (write only in figures/numbers)", answer: "500"},
+          {question: "How much should you not blow on airpods (write only in words)", answer: "five hundred"},
            { question: "what should you not treat your income like", answer: "trophy" },
           {question:"_________ is procastination in a tuxedo", answer: "perfectionism"},
           {question: "Make __________ a habit, not an aferthought", answer: "reinvestment"}
@@ -130,6 +130,12 @@ mongoose.connect(process.env.MONGO_URI)
           {question:"if you're _________ of the fluff ", answer: "tired"},
           {question: " show upoften and _________ consistently", answer: "deliver"}
         ]
+      },
+      {
+        title: "Video share",
+        instructions: "Share the youtube video to whatsapp groups or facebook <br/><br/> Upload a screenshot of the page you shared to ",
+        actionLink: "https://youtu.be/5Hkz89EY96w",
+        points: 1
       }
     ]);
 

@@ -28,11 +28,9 @@ router.post("/assign-questions/:taskId", auth, async (req, res) => {
       return res.status(404).json({ msg: "No questions to assign." });
     }
 
-    // Randomly pick 2 or all if fewer
     const shuffled = task.questions.sort(() => 0.5 - Math.random());
     const selected = shuffled.slice(0, Math.min(2, task.questions.length));
 
-    // Save assignment
     const assigned = await AssignedQuestion.findOneAndUpdate(
       { userId: req.user.id, taskId },
       { questions: selected },
@@ -67,25 +65,25 @@ router.post("/submit", auth, upload.single("screenshot"), async (req, res) => {
       return res.status(400).json({ msg: "Screenshot upload failed." });
     }
 
-    // ✅ Validate answers
-    if (task.questions && task.questions.length > 0) {
-      let parsedAnswers = [];
-      try {
-        parsedAnswers = JSON.parse(answers || "[]");
-      } catch (e) {
-        return res.status(400).json({ msg: "Invalid answers format." });
-      }
+    // ✅ Validate answers properly
+    let parsedAnswers = [];
+    try {
+      parsedAnswers = JSON.parse(answers || "[]");
+    } catch (e) {
+      return res.status(400).json({ msg: "Invalid answers format." });
+    }
 
-      const assigned = await AssignedQuestion.findOne({
-        userId: req.user.id,
-        taskId,
-      });
+    const assigned = await AssignedQuestion.findOne({ userId: req.user.id, taskId });
+    const checkAgainst = assigned ? assigned.questions : task.questions;
 
-      const checkAgainst = assigned ? assigned.questions : task.questions;
-
+    if (checkAgainst && checkAgainst.length > 0) {
       for (let i = 0; i < checkAgainst.length; i++) {
-        const expected = (checkAgainst[i].answer || "").trim().toLowerCase();
-        const provided = (parsedAnswers[i] || "").trim().toLowerCase();
+        const expected = String(checkAgainst[i]?.answer || "").trim().toLowerCase();
+        const answerObj = parsedAnswers.find((ans) => ans.questionId === checkAgainst[i]._id.toString());
+        const provided = String(answerObj?.answer || "").trim().toLowerCase();
+
+        console.log(`✅ Comparing Q${i + 1}: expected "${expected}" vs provided "${provided}"`);
+
         if (expected && expected !== provided) {
           return res.status(400).json({ msg: `Answer to question ${i + 1} is incorrect.` });
         }

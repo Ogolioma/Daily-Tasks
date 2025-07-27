@@ -191,33 +191,46 @@ function setupTaskToggle() {
   taskList.parentElement.appendChild(toggleBtn);
 }
 
-function openTask(task) {
+async function openTask(task) {
   selectedTaskId = task._id;
 
-  let questionHtml = "";
-  if (task.questions && task.questions.length > 0) {
-    // Shuffle and pick only 3 questions
-    const shuffled = [...task.questions].sort(() => 0.5 - Math.random());
-    currentQuestions = shuffled.slice(0, 2);
+  try {
+    const token = localStorage.getItem("token");
+    const localUser = JSON.parse(localStorage.getItem("user"));
+    const userId = localUser.id || localUser._id;
 
+    // ✅ Fetch only the assigned questions for this user and task
+    const res = await fetch(`https://daily-tasks-556b.onrender.com/api/tasks/assign-questions/${task._id}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await res.json();
+    currentQuestions = data.questions || [];
+
+    let questionHtml = "";
     currentQuestions.forEach((q, idx) => {
       questionHtml += `
         <label style="font-size:15px;font-weight:500;margin-top:8px;">${q.question}</label>
-        <input type="text" class="task-answer" data-idx="${idx}" style="display:block;width:100%;margin-bottom:10px;">
+        <input type="text" class="task-answer" data-id="${q._id}" style="display:block;width:100%;margin-bottom:10px;" />
       `;
     });
-  }
 
-  document.getElementById("taskTitle").textContent = task.title;
-  document.getElementById("taskInstructions").innerHTML = `
-    <p>${task.instructions}</p>
-    <a href="${task.actionLink}" target="_blank" style="color:#000080;font-weight:bold;font-size:16px;margin-top:18px;margin-bottom:18px;display:inline-block;">
-      Go to Task
-    </a>
-    <input type="file" id="screenshotUpload" accept="image/*" required style="display:block;margin-bottom:18px;margin-top:10px;" />
-    ${questionHtml}
-  `;
-  document.getElementById("taskModal").style.display = "flex";
+    document.getElementById("taskTitle").textContent = task.title;
+    document.getElementById("taskInstructions").innerHTML = `
+      <p>${task.instructions}</p>
+      <a href="${task.actionLink}" target="_blank" style="color:#000080;font-weight:bold;font-size:16px;margin-top:18px;margin-bottom:18px;display:inline-block;">
+        Go to Task
+      </a>
+      <input type="file" id="screenshotUpload" accept="image/*" required style="display:block;margin-bottom:18px;margin-top:10px;" />
+      ${questionHtml}
+    `;
+    document.getElementById("taskModal").style.display = "flex";
+  } catch (err) {
+    console.error("❌ Failed to load assigned questions:", err);
+    alert("Failed to load assigned questions.");
+  }
 }
 
 async function submitTask() {
@@ -229,7 +242,11 @@ async function submitTask() {
   if (!screenshot) return alert("Please upload a screenshot.");
 
   const answers = [];
-  document.querySelectorAll(".task-answer").forEach(input => answers.push(input.value.trim()));
+  document.querySelectorAll(".task-answer").forEach(input => {
+    const questionId = input.dataset.id;
+    const value = input.value.trim();
+    answers.push({ questionId, answer: value });
+  });
 
   const formData = new FormData();
   formData.append("taskId", selectedTaskId);
