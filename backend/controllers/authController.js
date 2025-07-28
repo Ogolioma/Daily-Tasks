@@ -36,15 +36,6 @@ exports.registerUser = async (req, res) => {
 
     await user.save();
 
-    // credit referral
-    if (referralCode) {
-      const referrer = await User.findOne({ myReferralCode: referralCode });
-      if (referrer) {
-        referrer.points += 10;
-        referrer.notifications.push({ message: `${firstName} joined using your referral. +10 points.` });
-        await referrer.save();
-      }
-    }
 
     //send email separately
     try{
