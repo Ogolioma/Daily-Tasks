@@ -25,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
           firstName,
           lastName,
           email,
+          phone,
           selectHow,
           taskTitle,
           budget,
