@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const firstName = document.getElementById("firstName").value;
     const lastName = document.getElementById("lastName").value;
     const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
     const selectHow = document.getElementById("selectHow").value;
     const taskTitle = document.getElementById("taskTitle").value;
     const budget = document.getElementById("budget").value;

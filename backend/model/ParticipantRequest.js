@@ -4,6 +4,7 @@ const participantSchema = new mongoose.Schema({
   firstName: String,
   lastName: String,
   email: String,
+  phone: { type: String, required: true },
   selectHow: String,
   taskTitle: String,
   budget: String,
