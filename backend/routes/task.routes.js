@@ -11,7 +11,7 @@ const sendMail = require("../utils/sendMail");
 // ------------------ GET ALL TASKS ------------------
 router.get("/", async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find().sort({priority:-1, createdAt:-1});
     res.json(tasks);
   } catch (err) {
     console.error("❌ Failed to fetch tasks:", err);

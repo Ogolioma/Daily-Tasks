@@ -140,6 +140,9 @@
           <option value="">Select Your Bank</option>
         </select>
 
+        <label for="paypalEmail">PayPal Email (optional)</label>
+        <input type="email" id="paypalEmail" placeholder="Enter PayPal email if preferred"/>
+
         <label for="amount">Amount to withdraw (Points)</label>
         <input type="number" id="amount" min="1000" required />
 
@@ -189,7 +192,8 @@
           accountName: document.getElementById("accountName").value,
           accountNumber: document.getElementById("accountNumber").value,
           bank: document.getElementById("bank").value,
-          amount: parseInt(document.getElementById("amount").value)
+          amount: parseInt(document.getElementById("amount").value),
+          paypalEmail: document.getElementById("paypalEmail").value || null // optional
         }),
       });
 

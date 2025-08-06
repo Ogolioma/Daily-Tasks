@@ -11,6 +11,7 @@ const taskSchema = new mongoose.Schema({
       answer: String
     }
   ],
+  priority: {type:Number, default:0},
   createdAt: { type: Date, default: Date.now },
 });
 

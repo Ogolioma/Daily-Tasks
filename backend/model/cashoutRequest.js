@@ -6,6 +6,7 @@ const cashoutSchema = new mongoose.Schema({
   accountName: String,
   accountNumber: String,
   bank: String,
+  paypalEmail: {type: String, default: null},
   status: { type: String, default: "Pending" },
   amount: Number,
   pointsUsed: Number,
