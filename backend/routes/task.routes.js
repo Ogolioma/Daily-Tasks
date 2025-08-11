@@ -149,4 +149,32 @@ router.post("/add", async (req, res) => {
   }
 });
 
+// ------------------ CPX POSTBACK HANDLER ------------------
+router.get("/cpx-postback", async (req, res) => {
+  try {
+    const { status, trans_id, user_id, sub_id, sub_id_2, amount_local, amount_usd, offer_id, hash, ip_click } = req.query;
+
+    const user = await User.findById(user_id);
+    if (!user) return res.status(404).send('User not found');
+
+    const parsedStatus = parseInt(status, 10);
+    if (parsedStatus === 1) {
+      const localAmount = parseFloat(amount_local) || parseFloat(amount_usd) || 0;
+      const points = localAmount > 0 ? 10 : 1; // 10 for completion, 1 for screen-out
+      user.points += points;
+      user.notifications.push({
+        message: `You ${points === 10 ? 'completed' : 'got screened out of'} a survey and earned ${points} points. (Transaction: ${trans_id})`,
+      });
+      await user.save();
+    } else if (parsedStatus === 2) {
+      console.log(`Reversal for trans_id ${trans_id} - points deduction not implemented yet.`);
+    }
+
+    res.send('OK');
+  } catch (err) {
+    console.error("❌ CPX postback error:", err);
+    res.status(500).send('Error');
+  }
+});
+
 module.exports = router;

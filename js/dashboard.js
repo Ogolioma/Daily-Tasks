@@ -132,6 +132,8 @@ async function loadTasks(freshUser) {
     container.innerHTML = "";
 
     let hasTasks = false;
+    const taskCards = []; // Array to collect task cards
+
     tasks.forEach((task) => {
       if (freshUser.completedTasks.includes(task._id)) return;
 
@@ -145,8 +147,29 @@ async function loadTasks(freshUser) {
         <p>Click to see task instructions</p>
       `;
       card.addEventListener("click", () => openTask(task));
-      container.appendChild(card);
+      taskCards.push(card);
     });
+
+    // Added: Create survey card
+    const surveyCard = document.createElement("div");
+    surveyCard.className = "task-card";
+    surveyCard.dataset.taskId = "survey-special"; // Unique identifier
+    surveyCard.innerHTML = `
+      <h4>Take Surveys</h4>
+      <p class="task-points">+10 pts</p>
+      <p>Click to see available surveys</p>
+    `;
+    surveyCard.addEventListener("click", () => openSurveyModal());
+
+    // Insert survey card as the 5th item (index 4)
+    if (taskCards.length >= 4) {
+      taskCards.splice(4, 0, surveyCard);
+    } else {
+      taskCards.push(surveyCard); // If less than 4 tasks, add at end
+    }
+
+    // Append all cards to container
+    taskCards.forEach(card => container.appendChild(card));
 
     if (!hasTasks) {
       container.innerHTML = "<p style='text-align:center;color:#555;'>No new tasks available. Please check back later.</p>";
@@ -199,7 +222,6 @@ async function openTask(task) {
     const localUser = JSON.parse(localStorage.getItem("user"));
     const userId = localUser.id || localUser._id;
 
-    // ✅ Fetch only the assigned questions for this user and task
     const res = await fetch(`https://daily-tasks-556b.onrender.com/api/tasks/assign-questions/${task._id}`, {
       method: "POST",
       headers: {
@@ -291,6 +313,67 @@ async function submitTask() {
 
 function closeModal() {
   document.getElementById("taskModal").style.display = "none";
+  // Added: Clean up CPX scripts to prevent memory leaks
+  const scripts = document.querySelectorAll('script[src*="cpx-research"], script[data-cpx-config]');
+  scripts.forEach(script => script.remove());
+}
+
+// Added: Function to open survey modal with CPX integration
+function openSurveyModal() {
+  const token = localStorage.getItem("token");
+  const localUser = JSON.parse(localStorage.getItem("user"));
+  const userId = localUser.id || localUser._id;
+
+  document.getElementById("taskTitle").textContent = "Take Surveys";
+  document.getElementById("taskInstructions").innerHTML = `
+    <p>Complete available surveys to earn points.</p>
+    <div id="cpx-survey-container" style="width:100%; height:400px; overflow:auto;"></div>
+  `;
+
+  // Load CPX config and script dynamically
+  const configScript = document.createElement("script");
+  configScript.innerHTML = `
+    const surveyConfig = {
+      div_id: "cpx-survey-container",
+      theme_style: 1, // Full content widget
+      order_by: 1, // Best score surveys first
+      limit_surveys: 10 // Up to 10 surveys
+    };
+    const styleConfig = {
+      text_color: "#000000",
+      topbar_background_color: "#000080", // Match your theme
+      box_background_color: "#ffffff",
+      rounded_borders: true
+    };
+    const config = {
+      general_config: {
+        app_id: "28612",
+        ext_user_id: "${userId}", // Matches user_id in postback
+      },
+      style_config: styleConfig,
+      script_config: [surveyConfig],
+      functions: {
+        no_surveys_available: () => console.log("No surveys available"),
+        count_new_surveys: (count) => console.log("New surveys count:", count),
+        get_all_surveys: (surveys) => console.log("All surveys:", surveys),
+        get_transaction: (transactions) => console.log("Transaction:", transactions)
+      }
+    };
+    window.config = config; // Fixed: Assign to window.config for the script to recognize
+  `;
+  document.body.appendChild(configScript);
+
+  const cpxScript = document.createElement("script");
+  cpxScript.src = "https://cdn.cpx-research.com/assets/js/script_tag_v2.0.js";
+  cpxScript.async = true;
+  document.body.appendChild(cpxScript);
+
+  // Hide submit button (assuming it's in your modal)
+  if (document.getElementById("submitTaskBtn")) {
+    document.getElementById("submitTaskBtn").style.display = "none";
+  }
+
+  document.getElementById("taskModal").style.display = "flex";
 }
 
 async function loadCashoutHistory() {
