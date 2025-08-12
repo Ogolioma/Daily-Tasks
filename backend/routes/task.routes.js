@@ -166,8 +166,9 @@ router.get("/cpx-postback", async (req, res) => {
     const parsedStatus = parseInt(status, 10);
     if (parsedStatus === 1) {
       const rewardAmount = parseFloat(amount_usd) || parseFloat(amount_local) || 0; // Use CPX's amount
-      const points = rewardAmount > 0 ? rewardAmount : 1; // Direct amount as points, min 1 for screen-out
+      const points = Math.round(rewardAmount); // Round to nearest whole number
       console.log("Received reward amount:", rewardAmount, "Assigned points:", points);
+      if (points < 1) points = 1; // Minimum 1 point for screen-out or zero amounts
       user.points += points;
       user.notifications.push({
         message: `You ${points > 1 ? 'completed' : 'got screened out of'} a survey and earned ${points} points. (Transaction: ${trans_id})`,
