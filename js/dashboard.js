@@ -140,7 +140,6 @@ async function loadTasks(freshUser) {
     surveyCard.dataset.taskId = "survey-special"; // Unique identifier
     surveyCard.innerHTML = `
       <h4>Take Surveys</h4>
-      <p class="task-points">+10 pts</p>
       <p>Click to see available surveys</p>
     `;
     surveyCard.addEventListener("click", () => openSurveyModal());
@@ -322,7 +321,7 @@ function openSurveyModal() {
 
   document.getElementById("taskTitle").textContent = "Take Surveys";
   document.getElementById("taskInstructions").innerHTML = `
-    <p>Complete available surveys to earn points. You’ll receive 10 points for completions or 1 point for screen-outs.</p>
+    <p>Complete available surveys to earn points.</p>
     <a href="https://offers.cpx-research.com/index.php?app_id=28612&ext_user_id=${userId}" target="_blank" style="color:#000080;font-weight:bold;font-size:16px;margin-top:18px;margin-bottom:18px;display:inline-block;">
       Go to Surveys
     </a>

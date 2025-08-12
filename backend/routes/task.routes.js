@@ -165,11 +165,12 @@ router.get("/cpx-postback", async (req, res) => {
 
     const parsedStatus = parseInt(status, 10);
     if (parsedStatus === 1) {
-      const localAmount = parseFloat(amount_local) || parseFloat(amount_usd) || 0;
-      const points = localAmount > 0 ? 10 : 1;
+      const rewardAmount = parseFloat(amount_usd) || parseFloat(amount_local) || 0; // Use CPX's amount
+      const points = rewardAmount > 0 ? rewardAmount : 1; // Direct amount as points, min 1 for screen-out
+      console.log("Received reward amount:", rewardAmount, "Assigned points:", points);
       user.points += points;
       user.notifications.push({
-        message: `You ${points === 10 ? 'completed' : 'got screened out of'} a survey and earned ${points} points. (Transaction: ${trans_id})`,
+        message: `You ${points > 1 ? 'completed' : 'got screened out of'} a survey and earned ${points} points. (Transaction: ${trans_id})`,
       });
       await user.save();
       console.log("Points updated for user_id:", user_id, "New points:", user.points);
