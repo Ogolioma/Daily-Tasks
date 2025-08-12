@@ -67,7 +67,7 @@ exports.createPassword = async (req, res) => {
     const { password } = req.body;
 
     const user = await User.findOne({ verificationToken: token });
-    if (!user) return res.status(400).json({ msg: "Invalid or expired token." });
+    if (!user) return res.status(400).json({ msg: "Password Created, PLease log in." });
 
     user.password = await bcrypt.hash(password, 10);
     user.emailVerified = true;
@@ -120,7 +120,7 @@ exports.resetPassword = async (req, res) => {
       resetPasswordExpires: { $gt: Date.now() }
     });
 
-    if (!user) return res.status(400).json({ msg: "Invalid or expired token." });
+    if (!user) return res.status(400).json({ msg: "Password has been rest. You can log in" });
 
     user.password = await bcrypt.hash(password, 10);
     user.resetPasswordToken = undefined;
