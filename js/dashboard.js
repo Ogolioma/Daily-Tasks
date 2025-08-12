@@ -134,6 +134,18 @@ async function loadTasks(freshUser) {
     let hasTasks = false;
     const taskCards = []; // Array to collect task cards
 
+    // Added: Create survey card first
+    const surveyCard = document.createElement("div");
+    surveyCard.className = "task-card";
+    surveyCard.dataset.taskId = "survey-special"; // Unique identifier
+    surveyCard.innerHTML = `
+      <h4>Take Surveys</h4>
+      <p class="task-points">+10 pts</p>
+      <p>Click to see available surveys</p>
+    `;
+    surveyCard.addEventListener("click", () => openSurveyModal());
+    taskCards.push(surveyCard); // Add survey card as the first item
+
     tasks.forEach((task) => {
       if (freshUser.completedTasks.includes(task._id)) return;
 
@@ -149,24 +161,6 @@ async function loadTasks(freshUser) {
       card.addEventListener("click", () => openTask(task));
       taskCards.push(card);
     });
-
-    // Added: Create survey card
-    const surveyCard = document.createElement("div");
-    surveyCard.className = "task-card";
-    surveyCard.dataset.taskId = "survey-special"; // Unique identifier
-    surveyCard.innerHTML = `
-      <h4>Take Surveys</h4>
-      <p class="task-points">+10 pts</p>
-      <p>Click to see available surveys</p>
-    `;
-    surveyCard.addEventListener("click", () => openSurveyModal());
-
-    // Insert survey card as the 5th item (index 4)
-    if (taskCards.length >= 4) {
-      taskCards.splice(4, 0, surveyCard);
-    } else {
-      taskCards.push(surveyCard); // If less than 4 tasks, add at end
-    }
 
     // Append all cards to container
     taskCards.forEach(card => container.appendChild(card));
@@ -248,6 +242,11 @@ async function openTask(task) {
       <input type="file" id="screenshotUpload" accept="image/*" required style="display:block;margin-bottom:18px;margin-top:10px;" />
       ${questionHtml}
     `;
+    // Ensure submit button is visible for regular tasks
+    const submitBtn = document.getElementById("submitTaskBtn");
+    if (submitBtn) {
+      submitBtn.style.display = "block"; // Reset to visible
+    }
     document.getElementById("taskModal").style.display = "flex";
   } catch (err) {
     console.error("❌ Failed to load assigned questions:", err);
@@ -313,12 +312,9 @@ async function submitTask() {
 
 function closeModal() {
   document.getElementById("taskModal").style.display = "none";
-  // Added: Clean up CPX scripts to prevent memory leaks
-  const scripts = document.querySelectorAll('script[src*="cpx-research"], script[data-cpx-config]');
-  scripts.forEach(script => script.remove());
 }
 
-// Added: Function to open survey modal with CPX integration
+// Added: Function to open survey modal with CPX link
 function openSurveyModal() {
   const token = localStorage.getItem("token");
   const localUser = JSON.parse(localStorage.getItem("user"));
@@ -326,51 +322,16 @@ function openSurveyModal() {
 
   document.getElementById("taskTitle").textContent = "Take Surveys";
   document.getElementById("taskInstructions").innerHTML = `
-    <p>Complete available surveys to earn points.</p>
-    <div id="cpx-survey-container" style="width:100%; height:400px; overflow:auto;"></div>
+    <p>Complete available surveys to earn points. You’ll receive 10 points for completions or 1 point for screen-outs.</p>
+    <a href="https://offers.cpx-research.com/index.php?app_id=28612&ext_user_id=${userId}" target="_blank" style="color:#000080;font-weight:bold;font-size:16px;margin-top:18px;margin-bottom:18px;display:inline-block;">
+      Go to Surveys
+    </a>
   `;
 
-  // Load CPX config and script dynamically
-  const configScript = document.createElement("script");
-  configScript.innerHTML = `
-    const surveyConfig = {
-      div_id: "cpx-survey-container",
-      theme_style: 1, // Full content widget
-      order_by: 1, // Best score surveys first
-      limit_surveys: 10 // Up to 10 surveys
-    };
-    const styleConfig = {
-      text_color: "#000000",
-      topbar_background_color: "#000080", // Match your theme
-      box_background_color: "#ffffff",
-      rounded_borders: true
-    };
-    const config = {
-      general_config: {
-        app_id: "28612",
-        ext_user_id: "${userId}", // Matches user_id in postback
-      },
-      style_config: styleConfig,
-      script_config: [surveyConfig],
-      functions: {
-        no_surveys_available: () => console.log("No surveys available"),
-        count_new_surveys: (count) => console.log("New surveys count:", count),
-        get_all_surveys: (surveys) => console.log("All surveys:", surveys),
-        get_transaction: (transactions) => console.log("Transaction:", transactions)
-      }
-    };
-    window.config = config; // Fixed: Assign to window.config for the script to recognize
-  `;
-  document.body.appendChild(configScript);
-
-  const cpxScript = document.createElement("script");
-  cpxScript.src = "https://cdn.cpx-research.com/assets/js/script_tag_v2.0.js";
-  cpxScript.async = true;
-  document.body.appendChild(cpxScript);
-
-  // Hide submit button (assuming it's in your modal)
-  if (document.getElementById("submitTaskBtn")) {
-    document.getElementById("submitTaskBtn").style.display = "flex";
+  // Hide submit button only for survey modal
+  const submitBtn = document.getElementById("submitTaskBtn");
+  if (submitBtn) {
+    submitBtn.style.display = "none";
   }
 
   document.getElementById("taskModal").style.display = "flex";
