@@ -370,7 +370,7 @@ function openSurveyModal() {
 
   // Hide submit button (assuming it's in your modal)
   if (document.getElementById("submitTaskBtn")) {
-    document.getElementById("submitTaskBtn").style.display = "none";
+    document.getElementById("submitTaskBtn").style.display = "flex";
   }
 
   document.getElementById("taskModal").style.display = "flex";
