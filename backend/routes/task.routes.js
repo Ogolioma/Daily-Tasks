@@ -156,19 +156,25 @@ router.get("/cpx-postback", async (req, res) => {
     console.log("Postback received with query:", req.query);
     const { status, trans_id, user_id, sub_id, sub_id_2, amount_local, amount_usd, offer_id, hash, ip_click } = req.query;
 
-    console.log("Received user_id:", user_id);
+    console.log("Received user_id:", user_id, "status:", status, "amount_usd:", amount_usd, "amount_local:", amount_local);
+    if (!user_id) {
+      console.log("❌ No user_id in postback query");
+      return res.status(400).send('Missing user_id');
+    }
     const user = await User.findById(user_id);
     if (!user) {
-      console.log("No user found for user_id:", user_id);
+      console.log("❌ No user found for user_id:", user_id);
       return res.status(404).send('User not found');
     }
 
     const parsedStatus = parseInt(status, 10);
     if (parsedStatus === 1) {
-      const rewardAmount = parseFloat(amount_usd) || parseFloat(amount_local) || 0; // Use CPX's amount
-      const points = Math.round(rewardAmount); // Round to nearest whole number
-      console.log("Received reward amount:", rewardAmount, "Assigned points:", points);
-      if (points < 1) points = 1; // Minimum 1 point for screen-out or zero amounts
+      const rewardAmount = parseFloat(amount_usd) || parseFloat(amount_local) || 0;
+      console.log("Raw reward amount from CPX:", rewardAmount);
+      let points = Math.round(rewardAmount); // Use let to allow reassignment
+      console.log("Rounded points before min check:", points);
+      if (points < 1) points = 1; // Reassign with let
+      console.log("Final assigned points:", points);
       user.points += points;
       user.notifications.push({
         message: `You ${points > 1 ? 'completed' : 'got screened out of'} a survey and earned ${points} points. (Transaction: ${trans_id})`,
