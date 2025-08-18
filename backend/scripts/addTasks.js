@@ -11,147 +11,164 @@ mongoose.connect(process.env.MONGO_URI)
     await Task.insertMany([
       {
         title: "Watch Video",
-        instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/_z4VmkDwgxI?si=-WBuOgJl7L9jEU5j",
+        instructions: "Go to 'youtube.com', search for 'Milky Way Part 1 Questions'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/VBlBjFPzesgh",
         points: 6,
         questions: [
-          {question: "Join multiple _________ networks?", answer: "survey"},
-          {question: "Where could you literally make money on?", answer: "toilet"},
-          { question: "What's the name of the character the narrator mentioned?", answer: "jude" },
-          {question: "How many months upfront did He pay for His rent? (please, write in words)", answer: "six"},
-          {question: "__________ want people who buy stuff, and live interesting lives", answer: "companies"},
-          {question: "Enable notifications so you never miss a survey __________ ?", answer: "invite"},
-          {question: "How often will TopSurvey send you surveys?", answer: "daily"},
-          {question: "Let's talk about the most __________ button on the platform?", answer: "beautiful"},
-          {question: "If you're using a ________ keep it active until your payment is processed?", answer: "proxy"},
-          { question: "________ multiple survey networks?", answer: "join" },
-           { question: "Type the referral code that was displayed on the screen, use only small cases/letters?", answer: "oqc8rr" },
-          { question: "Answer quickly but _________?", answer: "logically" },
-          {question: "They trust you with higher paying surveys when you are __________?", answer: "consistent"}
+          {question: "Basically being a Human _________ for the internet", answer: "compass"},
+          {question: "The internet is a _________ if you know where to dig", answer: "goldmine"},
+          { question: "Financial freedom is about _______", answer: "discipline" },
+          {question: "He felt like his __________ had a secret escape plan", answer: "money"},
+          {question: "It was search engine _________", answer: "evaluation"},
+          {question: "The _________ wasn't about rushing through task", answer: "secret"},
+          {question: "After a ___________ John was debt-free", answer: "year"}
         ]
       },
       {
         title: "Watch Video",
-        instructions:"Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/zXqxb6TtRi8?si=Hbgul3egl3mgY4Ed",
+        instructions: "Go to 'youtube.com', search for 'Milky Way evaluation'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/7kPmdPMGudHi",
         points: 6,
         questions: [
-          {question: "Real success is about building __________", answer: "systems"},
-          {question: "Daily Tasks is ________ with power?", answer: "strategy"},
-          {question: "You get _______ of every single task?", answer: "proofs"},
-          {question: "No pressure, No _________?", answer: "obligation"},
-          {question: "you don't have to go __________ to be seen?", answer: "viral"},
-          {question: "Don't ____________ engagement?", answer: "chase"},
-           { question: "The team ________ it, launched it?", answer: "planned" },
-          {question: "There's a _________ that's killing a lot of young people", answer: "mindset"},
-          {question: "We ________ stress", answer: "romanticise"},
-          {question: "We _______ being the one-man army", answer: "glammyize"},
-          {question: "Let the experts handle their _______", answer: "lane"},
-          { question: "Let the support team reach out and walk you through the _________?", answer: "process" },
-          { question: "Use the ______ that was built to help you win?", answer: "team" }
+          {question: "Also, remember to ______ your hours", answer: "track"},
+          {question: "It was like being the _________ of the internet", answer: "referee"},
+          { question: "No _______ delays, No excuses", answer: "shady" },
+          {question: "All it takes is a ________ application", answer: "brief"},
+          {question: "Step three, Click _________ more", answer: "view"},
+          {question: "It's your _________ to working from anywhere at anytime", answer: "ticket"},
+          {question: "________ your residential proxy and start today", answer: "grab"}
+        ]
+      },
+       {
+        title: "Watch Video",
+        instructions: "Go to 'youtube.com', search for 'Make Money with Top Surveys'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/1Bnv2RPRpwRu",
+        points: 6,
+        questions: [
+          {question: "Jude used his new _________ wisely", answer: "income"},
+          {question: "Your _________ has to stay consistent", answer: "profile"},
+          { question: "Top Surveys will start sending you surveys ______", answer: "daily" },
+          {question: "Be _______ but not rushed", answer: "fast"},
+          {question: "Minimun payout is ________ dollar on the first withdraw", answer: "five"},
+          {question: "If You're ______ you might as well get paid for it", answer: "scrolling"}
         ]
       },
       {
         title: "Watch Video",
-        instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/5Hkz89EY96w?si=_3oHWpG-RG5LfVGZ",
+        instructions: "Go to 'youtube.com', search for 'dailytasks.co surveys'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/2siykl5fsApo",
         points: 6,
         questions: [
-          { question: "That ____________ content where you rate fast-food chicken nuggets?", answer: "niche" },
-          {question: "It's not about perfection, it's about _________?", answer: "progress"},
-          {question: "Your ________ count didn't match your effort", answer: "view"},
-           { question: "Whether you're dropping __________, make-up tutorials?", answer: "memes" },
-          {question: "It's more like a digital _________", answer: "potluck"},
-           { question: "You can become a _______ you by next week?", answer: "better" },
-          {question: "When you start replying, __________, and showing up", answer: "connecting"},
-          {question: "That small _______ that leads to big results?", answer: "push"}
+          {question: "Tobi didn't finish his project because he was a tech _________", answer: "genius"},
+          {question: "Letting experts _________ their lane", answer: "handle"},
+          { question: "______ don't reward effort", answer: "people" },
+          {question: "You'll be _________ what money well spent can do", answer: "shocked"},
+          {question: "Daily Tasks has the community to make it ____________", answer: "happen"},
+          {question: "Daily Tasks, that's _________ with power", answer: "strategy"}
         ]
       },
-      {
+       {
         title: "Watch Video",
-        instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/GbSFoYEF_4U?si=dQLKc-hlEUGdNrY9",
+        instructions: "Go to 'youtube.com', search for 'using dailytasks.co'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/gFq7kjTUzZad",
         points: 6,
         questions: [
-          {question: "Daily tasks is literally paid ________?", answer: "scrolling"},
-          { question: "What do you turn your time into?", answer: "cash" },
-          {question: "What will you make if you can tap your screen?", answer: "money"},
-          {question: "What doesn't show up in suits and ties?", answer: "opportunities"},
-          {question: "You deserve to earn, You deserve _______ ?", answer: "freedom"},
-          {question: "The tasks are _________ so grab them first thing in the morning", answer: "limited"},
-          { question: "Use ___________ and WhatsApp for referrals", answer: "telegram" },
-          {question: "How many minutes does it take to sign up? (Please, write in words)", answer: "five"},
-          {question: "With Daily Tasks you're learning a ___________?", answer: "skill"},
-          {question: "Sign up for dailytasks.co and let your _________ pay you consistently?", answer: "phone"}
+          {question: "Don't _________ your engagers", answer: "ghost"},
+          {question: "Don't just build clout, turn it into ________", answer: "coin"},
+          { question: "Thanks for ______ around this long", answer: "sticking" },
+          {question: "Bring something to the ____________", answer: "table"},
+          {question: "He didn't pray to the ____________ gods", answer: "algorithm"},
+          {question: "Daily Tasks isn't a ___________ machine", answer: "miracle"}
+        ]
+      },
+       {
+        title: "Watch Video",
+        instructions: "Go to 'youtube.com', search for 'using dailytasks.co'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/sMxY77xrS3NW",
+        points: 6,
+        questions: [
+          {question: "Don't _________ your engagers", answer: "ghost"},
+          {question: "Don't just build clout, turn it into ________", answer: "coin"},
+          { question: "Thanks for ______ around this long", answer: "sticking" },
+          {question: "Bring something to the ____________", answer: "table"},
+          {question: "He didn't pray to the ____________ gods", answer: "algorithm"},
+          {question: "Daily Tasks isn't a ___________ machine", answer: "miracle"}
         ]
       },
        {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/t4NWv3tShcA?si=_ThwlLPdyUDivOC_",
+        actionLink: "https://youtu.be/t4NWv3tShcA?si=P1OM0p-pC57aeW4Y",
         points: 6,
         questions: [
-          { question: "What don't you need to be?", answer: "expert" },
-          {question: "What should you do to small skills?", answer: "combine"},
-          {question: "What's the name of the character in the story?", answer: "sandra"},
-          {question: "How many days should yo practice the ways to make money (write in words)", answer: "thirty"},
-          {question: "You don't need luck, you need _________", answer: "action"},
-          { question: "How should you start?", answer: "local" },
-          {question: "What don't you have with this many options?", answer: "excuse"},
-          {question: "Where is the real money?", answer: "discipline"},
-          {question: "What should you do to items?", answer: "flip"},
-          {question: "What do you need?", answer: "action"},
-          {question: " _________ plus socila media equals content creator", answer: "canva"},
-          { question: "Typing plus _________ equals CV and flyer service?", answer: "design" },
-          {question: "How many options were shared? (write in words)", answer: "ten"},
-          {question: "Don't wait for __________, build discipline?", answer: "motivation"},
-          {question: "The third method is?", answer: "microtasks"},
-          {question: "5. ________ what you know", answer: "teach"},
-          {question: "Monetize your ________ time", answer: "screen"}
+          { question: "Start _________, improve as you go?", answer: "messy" },
+          {question: "It puts ________ cash in your pocket and helps build momentum?", answer: "consistent"},
+          {question: "_________ plus good voice equals voice overs?", answer: "phone"},
+          {question: "No degree, no big capital, just ________", answer: "hustle"},
+          {question: "________ what you know", answer: "teach"},
+          { question: "We're all out here trying to ________, hustle, and win together?", answer: "grow" }
         ]
       },
       {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/KLG6Jtw_uUo?si=7CpfUgc8_NIInkdL",
+        actionLink: "https://youtu.be/KLG6Jtw_uUo?si=794WcE9MnbgnwVwW",
         points: 6,
         questions: [
-          { question: "What shouldn't you trade totally for money?", answer: "time" },
-          {question: "The goal is to build ___________?", answer: "freedom"},
-          {question: "What should you do with what you know?", answer: "monetize"},
-          {question: "____________ without action is a digital napkin", answer: "blueprint"},
-          {question: "High _________ systems, smart stacking", answer: "leverage"},
-          {question: "How should you stack?", answer: "smart"},
-          {question: "motivation is ______?", answer: "cute"},
-          {question: "What do you do with what you know?", answer: "monetize"},
-          {question: "Money goes to the most __________?", answer: "intentional"},
-          {question: "Treat your _________ like a seed", answer: "income"},
-          {question: "This wasn't just a video, it's a _________?", answer: "blueprint"},
-          {question: "Money doesn't go to the ________", answer: "smartest"},
-          {question: "You don't have to be _________, you just have to start", answer: "perfect"}
+          { question: "Avoid the shiny object ________?", answer: "syndrome" },
+          {question: "Nail it, _________ it, stack it?", answer: "systemize"},
+          {question: "Let's say you start with _________ design", answer: "freelance"},
+          {question: "____________ doesn't come from more chaos, it comes from clean stacking", answer: "scale"},
+          {question: "It's not the ______ that is broken, it's the consistency", answer: "idea"},
+          {question: "Do one thing today that gets you closer to your ________?", answer: "goal"}
         ]
       },
       {
         title: "Watch Video",
         instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
-        actionLink: "https://youtu.be/aOUoHqA4A0o?si=hzbLa4vlYVQOCE-o",
+        actionLink: "https://youtu.be/aOUoHqA4A0o?si=0i0loYJ4ze6ji1kG",
         points: 6,
         questions: [
-          { question: "What should speak for you?", answer: "success" },
-          {question: "What influence you net worth?", answer: "network"},
-          {question: "You don't have to stay ________?", answer: "stuck"},
-          {question: "What can you create", answer: "options"},
-          {question: "You can build a _________ where money is your tool", answer: "life"},
-          {question: "How many things should you pick from this video?", answer: "one"},
-          {question: "you don't have to feel ___________?", answer: "overwhelmed"},
-          {queston: "It will happen over many __________?", answer: "nights"},
-          {question: "Now, you take _________ ?", answer: "action"},
-          {question: "What should you practice daily", answer: "gratitude"},
-          {question: "Money flows where _________ lives?", answer: "peace"},
-          {question: "What do you need to take small steps consistently?", answer: "courage"},
-          {question: "You've learned how to grow your money through _____________, planning?", answer: "budgeting"},
-          {queston: "Most importantly, you've learned how to ___________ it", answer: "multiply"},
-          {question: "Drop a comment with your ________ money goal ?", answer: "biggest"}
+          { question: "That's the blueprint for __________ freedom", answer: "financial" },
+          {question: "That could be ___________ your expenses ?", answer: "tracking"},
+          {question: "It doesn't have to be _________ you just have to begin", answer: "perfect"},
+          {question: "__________ in silence, let your success speak for you", answer: "flex"},
+          {question: "You just need clarity, discipline, and the courage to take small steps ________", answer: "consistently"},
+          {question: "Go out there and ________ it, grow it, and most importantly keep it", answer: "earn"}
+        ]
+      },
+       {
+        title: "Watch Video",
+        instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
+        actionLink: "https://youtu.be/EFjamX2-SkM?si=PHY_eyRHFTA4hNEU",
+        points: 6,
+        questions: [
+          { question: "___________ is your best friend here", answer: "coffee" },
+          {question: "Every ________ was an opportunity to get better", answer: "challenge"},
+          {question: "Find the MilkyWAy ____________", answer: "project"},
+          {question: "He's a __________ in writing MilkyWay certifications", answer: "specialist"},
+          {question: "Grab your residential ____________, and start today", answer: "proxy"},
+          {question: "You'll receive an ________ from the Oneforma recruitment team", answer: "invite"}
+        ]
+      },
+      {
+        title: "Facebook Share",
+        instructions: "Share the video to Facebook Only",
+        actionLink: "https://youtu.be/eGzf2kFTB10?si=obKdKirVYztGX_gR",
+        points:3
+      },
+      {
+        title: "Watch Video",
+        instructions: "Watch the video to the end without skipping,like and leave a relevant comment.<br/><br/> Upload screenshot showing you watched the video to end, with your comment. <br/><br/>Answer the questions. Please, write your answer in small-cases (small letters) and give one-word answers",
+        actionLink: "https://youtu.be/eGzf2kFTB10?si=obKdKirVYztGX_gR",
+        points: 10,
+        questions: [
+          { question: "I'm tired of ________ noodles too", answer: "instant" },
+          {question: "You might be ________ about bills", answer: "stressed"},
+          {question: "____________ doesn't have to be your forever story", answer: "debt"},
+          {question: "__________ doesn't have to be a dream", answer: "stability"},
+          {question: "____________ realised something", answer: "john"},
+          {question: "No ________ stress eating him alive", answer: "financial"}
         ]
       }
       ]);
