@@ -313,29 +313,6 @@ function closeModal() {
   document.getElementById("taskModal").style.display = "none";
 }
 
-// Added: Function to open survey modal with CPX link
-function openSurveyModal() {
-  const token = localStorage.getItem("token");
-  const localUser = JSON.parse(localStorage.getItem("user"));
-  const userId = localUser.id || localUser._id;
-
-  document.getElementById("taskTitle").textContent = "Take Surveys";
-  document.getElementById("taskInstructions").innerHTML = `
-    <p>Complete available surveys to earn points.</p>
-    <a href="https://offers.cpx-research.com/index.php?app_id=28612&ext_user_id=${userId}" target="_blank" style="color:#000080;font-weight:bold;font-size:16px;margin-top:18px;margin-bottom:18px;display:inline-block;">
-      Go to Surveys
-    </a>
-  `;
-
-  // Hide submit button only for survey modal
-  const submitBtn = document.getElementById("submitTaskBtn");
-  if (submitBtn) {
-    submitBtn.style.display = "none";
-  }
-
-  document.getElementById("taskModal").style.display = "flex";
-}
-
 async function loadCashoutHistory() {
   const token = localStorage.getItem("token");
   const container = document.getElementById("cashoutHistoryContainer");
