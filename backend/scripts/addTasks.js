@@ -9,7 +9,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     // ✅ Insert all your tasks exactly as provided
     await Task.insertMany([
-      {
+      /*{
         title: "Watch Video",
         instructions: "Go to 'youtube.com', search for 'Milky Way Part 1 Questions'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
         actionLink: "https://prnt.sc/VBlBjFPzesgh",
@@ -46,18 +46,30 @@ mongoose.connect(process.env.MONGO_URI)
           {question: "___________ to the guidelines", answer: "stick"},
           {question: "If it doesn't __________ with the guidelines", answer: "align"}
         ]
-      },
+      },*/
             {
         title: "Watch Video",
         instructions: "Go to 'youtube.com', search for 'Tryrating exam'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
         actionLink: "https://prnt.sc/rm4EWdkqRX0n",
         points: 10,
         questions: [
-          {question: "These differences are _____________ issues, not accuracy issues", answer: "formatting"},
-          {question: "Let’s start with the __________ standard: the Perfect Pin.", answer: "gold"},
-          { question: " choose can’t _________ instead of guessing.", answer: "verify" },
-          {question: "With attention to detail, persistence, and a little humor, even maps can lead you to _________", answer: "treasure"},
-          {question: " whether an address is accurate, or whether a query is truly ___________", answer: "navigational"}
+          {question: "________ pins cause significant inconvenience—", answer: "approximate"},
+          {question: "Using ____________ blogs or outdated listings for verification", answer: "unofficial"},
+          { question: "_________ passed his exam, thanks to the expert rater", answer: "ethan" },
+          {question: "___________ equals trust. When I place a pin or confirm an addres", answer: "accuracy"}
+        ]
+      },
+       {
+        title: "Watch Video",
+        instructions: "Go to 'youtube.com', search for 'Tryrating exam  Q and A'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/Ssvp91_CaHPD",
+        points: 10,
+        questions: [
+          {question: "Double-check __________ sources,", answer: "official"},
+          {question: "P.O. boxes are not valid ________ addresses", answer: "map"},
+          { question: "Only one result can fully satisfy ______- in these cases", answer: "intent" },
+          {question: "Pin accuracy is judged separately _________", answer: "relevance"},
+          {question: "Even if a __________ is permanently closed, you still rate relevance as though it were open", answer: "business"}
         ]
       }
       ]);
