@@ -132,19 +132,6 @@ async function loadTasks(freshUser) {
     container.innerHTML = "";
 
     let hasTasks = false;
-    const taskCards = []; // Array to collect task cards
-
-    // Added: Create survey card first
-    const surveyCard = document.createElement("div");
-    surveyCard.className = "task-card";
-    surveyCard.dataset.taskId = "survey-special"; // Unique identifier
-    surveyCard.innerHTML = `
-      <h4>Take Surveys</h4>
-      <p>Click to see available surveys</p>
-    `;
-    surveyCard.addEventListener("click", () => openSurveyModal());
-    taskCards.push(surveyCard); // Add survey card as the first item
-
     tasks.forEach((task) => {
       if (freshUser.completedTasks.includes(task._id)) return;
 
@@ -158,11 +145,8 @@ async function loadTasks(freshUser) {
         <p>Click to see task instructions</p>
       `;
       card.addEventListener("click", () => openTask(task));
-      taskCards.push(card);
+      container.appendChild(card);
     });
-
-    // Append all cards to container
-    taskCards.forEach(card => container.appendChild(card));
 
     if (!hasTasks) {
       container.innerHTML = "<p style='text-align:center;color:#555;'>No new tasks available. Please check back later.</p>";
@@ -215,6 +199,7 @@ async function openTask(task) {
     const localUser = JSON.parse(localStorage.getItem("user"));
     const userId = localUser.id || localUser._id;
 
+    // ✅ Fetch only the assigned questions for this user and task
     const res = await fetch(`https://daily-tasks-556b.onrender.com/api/tasks/assign-questions/${task._id}`, {
       method: "POST",
       headers: {
@@ -241,11 +226,6 @@ async function openTask(task) {
       <input type="file" id="screenshotUpload" accept="image/*" required style="display:block;margin-bottom:18px;margin-top:10px;" />
       ${questionHtml}
     `;
-    // Ensure submit button is visible for regular tasks
-    const submitBtn = document.getElementById("submitTaskBtn");
-    if (submitBtn) {
-      submitBtn.style.display = "block"; // Reset to visible
-    }
     document.getElementById("taskModal").style.display = "flex";
   } catch (err) {
     console.error("❌ Failed to load assigned questions:", err);
