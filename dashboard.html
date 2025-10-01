@@ -85,8 +85,6 @@
           </div>
         </section>
 
-        <!-- CPX Fullscreen Widget -->
-        <div style="max-width: 950px; margin: auto" id="fullscreen"></div>
 
         <section class="points-panel">
           <h2 class="earning-header">My Earning</h2><br /><br />
@@ -111,40 +109,7 @@
           <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="Chat with us on WhatsApp" />
         </a>
       </main>
-      <script>
-        const script1 = {
-          div_id: "fullscreen",
-          theme_style: 1,
-          order_by: 1,
-          limit_surveys: 7
-        };
 
-        const config = {
-          general_config: {
-            app_id: "28899", // Replace with your active app ID
-            ext_user_id: "${userId}", // Placeholder for now
-            secure_hash: "NUTVv3RBQhWcYMjYTFFcYfqh8KTJ43yc", // Replace with your hash
-            subid_1: "",
-            subid_2: ""
-          },
-          style_config: {
-            text_color: "#2b2b2b",
-            survey_box: {
-              topbar_background_color: "#ffaf20",
-              box_background_color: "white",
-              rounded_borders: true,
-              stars_filled: "black"
-            }
-          },
-          script_config: [script1],
-          debug: false,
-          useIFrame: true,
-          iFramePosition: 1
-        };
-
-        window.config = config;
-      </script>
-      <script type="text/javascript" src="https://cdn.cpx-research.com/assets/js/script_tag_v2.0.js"></script>
       <script src="js/dashboard.js"></script>
       <script src="js/script.js"></script>
       <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>

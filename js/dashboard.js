@@ -131,6 +131,29 @@ async function loadTasks(freshUser) {
     const container = document.getElementById("taskList");
     container.innerHTML = "";
 
+    // ✅ Always add CPX Surveys card first
+    const localUser = JSON.parse(localStorage.getItem("user"));
+    const userId = localUser.id || localUser._id;
+    const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=28899&ext_user_id=${userId}&secure_hash=NUTVv3RBQhWcYMjYTFFcYfqh8KTJ43yc`;
+
+    const cpxCard = document.createElement("div");
+    cpxCard.className = "task-card";
+    cpxCard.innerHTML = `
+      <h4>CPX Surveys</h4>
+      <p class="task-points"></p>
+      <p>Complete surveys and earn points</p>
+    `;
+    cpxCard.addEventListener("click", () => {
+      document.getElementById("taskTitle").textContent = "CPX Surveys";
+      document.getElementById("taskInstructions").innerHTML = `
+        <iframe src="${cpxUrl}" style="width:100%;height:600px;border:none;"></iframe>
+        <p style="margin-top:10px;color:#555;">Complete surveys to earn points. Rewards are auto-added when you finish a survey.</p>
+      `;
+      document.getElementById("taskModal").style.display = "flex";
+    });
+    container.appendChild(cpxCard); // 👈 Prepend CPX card
+
+    // Now render DB tasks after CPX
     let hasTasks = false;
     tasks.forEach((task) => {
       if (freshUser.completedTasks.includes(task._id)) return;
@@ -149,7 +172,7 @@ async function loadTasks(freshUser) {
     });
 
     if (!hasTasks) {
-      container.innerHTML = "<p style='text-align:center;color:#555;'>No new tasks available. Please check back later.</p>";
+      container.innerHTML += "<p style='text-align:center;color:#555;'>No new tasks available. Please check back later.</p>";
     } else {
       setupTaskToggle();
     }
@@ -157,6 +180,7 @@ async function loadTasks(freshUser) {
     console.error("❌ Failed to load tasks:", err);
   }
 }
+
 
 function setupTaskToggle() {
   const taskList = document.getElementById("taskList");

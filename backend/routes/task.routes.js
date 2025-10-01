@@ -156,6 +156,16 @@ router.get("/cpx-postback", async (req, res) => {
     console.log("Postback received with query:", req.query);
     const { status, trans_id, user_id, sub_id, sub_id_2, amount_local, amount_usd, offer_id, hash, ip_click } = req.query;
 
+    // ✅ Secure hash validation
+    const CPX_SECRET = "NUTVv3RBQhWcYMjYTFFcYfqh8KTJ43yc"; // your CPX secure hash key
+    const dataString = `${user_id}${CPX_SECRET}`;
+    const generatedHash = crypto.createHash("md5").update(dataString).digest("hex");
+
+    if (generatedHash !== hash) {
+      console.log("❌ Invalid secure hash. Postback rejected.");
+      return res.status(403).send("Invalid hash");
+    }
+
     console.log("Received user_id:", user_id, "status:", status, "amount_usd:", amount_usd, "amount_local:", amount_local);
     if (!user_id) {
       console.log("❌ No user_id in postback query");

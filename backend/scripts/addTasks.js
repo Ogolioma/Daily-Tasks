@@ -9,94 +9,17 @@ mongoose.connect(process.env.MONGO_URI)
   .then(async () => {
     // ✅ Insert all your tasks exactly as provided
     await Task.insertMany([
-      /*{
-        title: "Watch Video",
-        instructions: "Go to 'youtube.com', search for 'Milky Way Part 1 Questions'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
-        actionLink: "https://prnt.sc/VBlBjFPzesgh",
-        points: 6,
-        questions: [
-          {question: "the _________ they're looking for, not something else", answer: "treasure"},
-          {question: "He was ___________ attacking his student loan", answer: "confidently"},
-          { question: "No sleepless nigts about __________", answer: "loans" },
-          {question: "the ____ is a goldmine", answer: "internet"},
-          {question: "You might feel ________ just like John did", answer: "stuck"}
-        ]
-      },
-       {
-        title: "Watch Video",
-        instructions: "Go to 'youtube.com', search for 'Milky Way evaluation'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
-        actionLink: "https://prnt.sc/krM24pfsZlFD",
-        points: 6,
-        questions: [
-          {question: "Be consistent, set a ________ target", answer: "weekly"},
-          {question: "__________ change and so should you", answer: "guidelines"},
-          { question: "or dealing with annoying _______ politics", answer: "office" },
-          {question: " ________ the Milkyway project", answer: "find"}
-        ]
-      },
-      {
-        title: "Watch Video",
-        instructions: "Go to 'youtube.com', search for 'Milkyway Part two simulator'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
-        actionLink: "https://prnt.sc/Of8fGHm9z2t3",
-        points: 10,
-        questions: [
-          {question: "You're ______ you can think like a rater", answer: "proving"},
-          {question: "Use the same _________ process for every question", answer: "thought"},
-          { question: "the _________ is the user's voice", answer: "query" },
-          {question: "your _____ might say one answer feels right", answer: "gut"},
-          {question: "read the query, ______ the result", answer: "analyze"}
-        ]
-      },
-            {
-        title: "Watch Video",
-        instructions: "Go to 'youtube.com', search for 'Tryrating exam'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
-        actionLink: "https://prnt.sc/rm4EWdkqRX0n",
-        points: 10,
-        questions: [
-          {question: "The ______ of the pin, not the round head, marks the actual spot", answer: "tip"},
-          {question: "Next Door is a moderate _________", answer: "error"},
-          { question: "When you confirm a query is ________, you’ll need to rate results accordingly", answer: "navigational" },
-          {question: "He realized that Raters get paid for their ability to _____ small mistakes others ignore", answer: "spot"},
-          {question: "He turned what seemed boring into an _______", answer: "adventure"}
-        ]
-      },
-       {
-        title: "Watch Video",
-        instructions: "Go to 'youtube.com', search for 'Tryrating exam  Question & Answer'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
-        actionLink: "https://prnt.sc/Ssvp91_CaHPD",
-        points: 6,
-        questions: [
-          {question: "Name accuracy checks if the business name matches its official, real-world _____?", answer: "identity"},
-          {question: "Only one result can fully satisfy _________ in these cases", answer: "intent"},
-          { question: "Pin accuracy is judged separately from __________", answer: "relevance" },
-          {question: "Once intent is determined, the next step is to check _________", answer: "relevance"},
-          {question: "That’s exactly the kind of accuracy that map raters help ________", answer: "maintain"}
-        ]
-      },*/
-      {
-        title: "Watch Video",
-        instructions: "Go to 'youtube.com', search for 'MilkyWay Light Speed'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
-        actionLink: "https://prnt.sc/D0ZHC04AAJ0z",
-        points: 6,
-        questions: [
-          {question: "There were news results where he had to check if the _______ made sense", answer: "date"},
-          {question: "He began thinking like a search engine evaluator, not just a casual _________", answer: "googler"},
-          { question: "The Lightspeed project isn’t just about passing an exam. It’s about developing a ________", answer: "mindset" },
-          {question: " Big ___________ are nothing more than small wins stacked on top of each other", answer: "transformations"},
-          {question: "It’s designed to test whether you can be ________", answer: "consistent"}
-        ]
-      },
       {
         title: "Watch Video",
         instructions: "Go to 'youtube.com', search for 'Karl Syft Detection'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
         actionLink: "https://prnt.sc/TBh8IsHsAKAl",
-        points: 6,
+        points: 5,
         questions: [
-          {question: "Over time, your ________ will naturally increase", answer: "spped"},
-          {question: "Always ________ in when needed.", answer: "zoom"},
-          { question: "Don’t _________ things that aren’t required. Follow exactly what the guidelines say.", answer: "label" },
-          {question: "A tagging _________ for choosing categories.", answer: "panel"},
-          {question: "Reviewing existing annotations for accuracy and __________", answer: "consistency"}
+          {question: "The rates can vary depending on ________ and task type", answer: "region"},
+          {question: "Over time, your ________ will naturally increase", answer: "speed"},
+          { question: "Ignoring ______ cases – not knowing what to do with unclear images.", answer: "edge" },
+          {question: "Most annotation projects come with a training _______", answer: "guide"},
+          {question: "___________ work can be time-consuming", answer: "annotation"}
         ]
       },
       {
@@ -105,24 +28,50 @@ mongoose.connect(process.env.MONGO_URI)
         actionLink: "https://prnt.sc/SiB3BI6ngrPR",
         points: 7,
         questions: [
-          {question: "________ is all about consistency. It’s not about your personal opinions", answer: "annotation"},
-          {question: " check the ________ levels, think about the categories, and make the safest choice", answer: "severity"},
-          { question: "There are usually _____ main levels to keep in mind", answer: "three" },
-          {question: "These are ________ and should not be flagged.", answer: "safe"},
-          {question: "This is _________, but it’s not as extreme as bomb-making", answer: "dangerous"}
+          {question: "Always stop and ask yourself: Is this content ______, and if so, is it safe or unsafe?", answer: "sexual"},
+          {question: "You now have the tools to go into Karl annotation projects with _________", answer: "confidence"},
+          { question: "The response is unsafe, completely __________, irrelevant, or nonsensical", answer: "unhelpful" },
+          {question: "Creative writing vs explicit writing. A love ________ is fine. A pornographic scene is not", answer: "poem"},
+          {question: "If the AI refuses a ________ prompt, you reward it with a high-quality rating", answer: "dangerous"}
         ]
       },
          {
         title: "Watch Video",
         instructions: "Go to 'youtube.com', search for 'UHRS Assessment'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
         actionLink: "https://prnt.sc/8MovxrHJTkOa",
-        points: 10,
+        points: 7,
         questions: [
-          {question: "you’re part of a _________ invisible workforce training the next generation of technology", answer: "global"},
-          {question: "Sometimes you log in and tasks are _______", answer: "gone"},
-          { question: "OneForma ___________ and sends payment to your chosen method", answer: "consolidates" },
-          {question: "Once you’re comfortable, work _______ but without cutting corners", answer: "quickly"},
-          {question: "_________ whether this ad is misleading.", answer: "judge"}
+          {question: "The idea of getting paid fractions of a _________ for each HIT sounded… well, underwhelming.", answer: "cent"},
+          {question: "That’s it—you just trained an AI to learn what a __________ ad looks like", answer: "relevant"},
+          { question: "Sometimes one ________ glitches, so keep Edge and Chrome ready.", answer: "browser" },
+          {question: "Building a __________ for better-paying online jobs.", answer: "foundation"},
+          {question: "That means you’re part of a global invisible ________ training the next generation of technology.", answer: "workforce"}
+        ]
+      },
+      {
+        title: "Watch Video",
+        instructions: "Go to 'youtube.com', Karl L2 Annotation'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/sYKt4_n2g3E0",
+        points: 7,
+        questions: [
+          {question: "It emphasizes that evaluation is not ___________", answer: "guesswork"},
+          {question: "A response that looks fine on the surface may ___________ harmful stereotypes", answer: "reinforce"},
+          { question: "Evaluators use a __________ of cultural appropriateness", answer: "scale" },
+          {question: "Another may be _________ but incomplete", answer: "safe"},
+          {question: "Every ___________ choice, every evaluation rule, every severity label reflects human judgments about what matters", answer: "design"}
+        ]
+      },
+      {
+        title: "Watch Video",
+        instructions: "Go to 'youtube.com', Karl L3 Annotation'. Type it in the searchbox, do not copy and paste.<br/><br/> Find the video with the thumbnail that appears when you click 'Go to task'.<br/<> Watch the video till the end and answer the questions. <br/><br/>Please, give one-word answers and in all small cases/letters",
+        actionLink: "https://prnt.sc/sVssOpt5zB5k",
+        points: 7,
+        questions: [
+          {question: "We explored prompt __________ in depth", answer: "evaluation"},
+          {question: "The difference lies in how directly or indirectly the _________ is expressed", answer: "stereotype"},
+          { question: " These examples should now serve as _______ anchors during the real exam.", answer: "mental" },
+          {question: "These parameters train you to look beyond surface clarity and check for ________ and realism.", answer: "completeness"},
+          {question: "We explored prompt evaluation in ________", answer: "depth"}
         ]
       }
       ]);
