@@ -206,3 +206,4 @@ router.get("/cpx-postback", async (req, res) => {
     return res.status(500).send("Error");
   }
 });
+module.exports = router;
