@@ -157,13 +157,7 @@ router.get("/cpx-postback", async (req, res) => {
   console.log("✅ CPX postback hit with query:", req.query);
 
   try {
-    const {
-      status,
-      trans_id,
-      user_id,
-      amount_local,
-      amount_usd,
-    } = req.query;
+    const { status, trans_id, user_id, amount_local, amount_usd } = req.query;
 
     if (!user_id) {
       console.log("❌ Missing user_id in postback");
@@ -179,25 +173,28 @@ router.get("/cpx-postback", async (req, res) => {
     const parsedStatus = parseInt(status, 10);
 
     if (parsedStatus === 1) {
-      // ✅ Round to whole number so earningsRing updates correctly
-      const rewardAmount =
-        parseFloat(amount_usd) || parseFloat(amount_local) || 0;
-      const points = Math.round(rewardAmount);
+      // ✅ Use local amount (points) first
+      const points =
+        Math.round(parseFloat(amount_local)) ||
+        Math.round(parseFloat(amount_usd)) ||
+        0;
 
       if (points > 0) {
         user.points += points;
         user.notifications.push({
-          message: `You completed a CPX survey and earned ${points} points. (Transaction: ${trans_id})`,
+          message: `🎉 You completed a CPX survey and earned ${points} points. (Transaction: ${trans_id})`,
         });
 
         await user.save();
         console.log(
           `🎉 User ${user_id} credited with ${points} points. New total: ${user.points}`
         );
+      } else {
+        console.log(`⚠️ Postback received but no points could be calculated`);
       }
     } else if (parsedStatus === 2) {
       console.log(`ℹ️ Reversal received for trans_id ${trans_id}`);
-      // optional: deduct points here if you want
+      // Optional: deduct points here if needed
     }
 
     return res.send("OK");
