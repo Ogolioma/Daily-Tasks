@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+/////////
+const crypto = require("crypto");
 const Task = require("../model/Task");
 const User = require("../model/user");
 const Proof = require("../model/proof");
@@ -150,56 +152,57 @@ router.post("/add", async (req, res) => {
 });
 
 // ------------------ CPX POSTBACK HANDLER ------------------
+// ------------------ CPX POSTBACK HANDLER ------------------
 router.get("/cpx-postback", async (req, res) => {
-  console.log("Route /cpx-postback hit with query:", req.query); // Confirm route is reached
+  console.log("✅ CPX postback hit with query:", req.query);
+
   try {
-    console.log("Postback received with query:", req.query);
-    const { status, trans_id, user_id, sub_id, sub_id_2, amount_local, amount_usd, offer_id, hash, ip_click } = req.query;
+    const {
+      status,
+      trans_id,
+      user_id,
+      amount_local,
+      amount_usd,
+    } = req.query;
 
-    // ✅ Secure hash validation
-    const CPX_SECRET = "NUTVv3RBQhWcYMjYTFFcYfqh8KTJ43yc"; // your CPX secure hash key
-    const dataString = `${user_id}${CPX_SECRET}`;
-    const generatedHash = crypto.createHash("md5").update(dataString).digest("hex");
-
-    if (generatedHash !== hash) {
-      console.log("❌ Invalid secure hash. Postback rejected.");
-      return res.status(403).send("Invalid hash");
-    }
-
-    console.log("Received user_id:", user_id, "status:", status, "amount_usd:", amount_usd, "amount_local:", amount_local);
     if (!user_id) {
-      console.log("❌ No user_id in postback query");
-      return res.status(400).send('Missing user_id');
+      console.log("❌ Missing user_id in postback");
+      return res.status(400).send("Missing user_id");
     }
+
     const user = await User.findById(user_id);
     if (!user) {
-      console.log("❌ No user found for user_id:", user_id);
-      return res.status(404).send('User not found');
+      console.log("❌ No user found for:", user_id);
+      return res.status(404).send("User not found");
     }
 
     const parsedStatus = parseInt(status, 10);
+
     if (parsedStatus === 1) {
-      const rewardAmount = parseFloat(amount_usd) || parseFloat(amount_local) || 0;
-      console.log("Raw reward amount from CPX:", rewardAmount);
-      let points = Math.round(rewardAmount); // Use let to allow reassignment
-      console.log("Rounded points before min check:", points);
-      if (points < 1) points = 1; // Reassign with let
-      console.log("Final assigned points:", points);
-      user.points += points;
-      user.notifications.push({
-        message: `You ${points > 1 ? 'completed' : 'got screened out of'} a survey and earned ${points} points. (Transaction: ${trans_id})`,
-      });
-      await user.save();
-      console.log("Points updated for user_id:", user_id, "New points:", user.points);
+      // ✅ Round to whole number so earningsRing updates correctly
+      const rewardAmount =
+        parseFloat(amount_usd) || parseFloat(amount_local) || 0;
+      const points = Math.round(rewardAmount);
+
+      if (points > 0) {
+        user.points += points;
+        user.notifications.push({
+          message: `You completed a CPX survey and earned ${points} points. (Transaction: ${trans_id})`,
+        });
+
+        await user.save();
+        console.log(
+          `🎉 User ${user_id} credited with ${points} points. New total: ${user.points}`
+        );
+      }
     } else if (parsedStatus === 2) {
-      console.log(`Reversal for trans_id ${trans_id} - points deduction not implemented yet.`);
+      console.log(`ℹ️ Reversal received for trans_id ${trans_id}`);
+      // optional: deduct points here if you want
     }
 
-    res.send('OK');
+    return res.send("OK");
   } catch (err) {
-    console.error("❌ CPX postback error:", err.message, err.stack);
-    res.status(500).send('Error');
+    console.error("❌ CPX postback error:", err);
+    return res.status(500).send("Error");
   }
 });
-
-module.exports = router;
