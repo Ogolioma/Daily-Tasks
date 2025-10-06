@@ -153,17 +153,15 @@ router.post("/add", async (req, res) => {
 
 // ------------------ CPX POSTBACK HANDLER ------------------
 router.get("/cpx-postback", async (req, res) => {
-  console.log("✅ CPX postback hit with query:", req.query);
+  console.log("✅ CPX postback hit:", req.query);
 
   try {
     const {
       status,
-      trans_id,
       user_id,
       amount_local,
       amount_usd,
-      offer_id,
-      ip_click,
+      trans_id,
     } = req.query;
 
     if (!user_id) {
@@ -173,61 +171,43 @@ router.get("/cpx-postback", async (req, res) => {
 
     const user = await User.findById(user_id);
     if (!user) {
-      console.log("❌ No user found for:", user_id);
+      console.log("❌ User not found:", user_id);
       return res.status(404).send("User not found");
     }
 
-    // ✅ Prevent duplicate postbacks
-    const existingProof = await Proof.findOne({ transactionId: trans_id });
-    if (existingProof) {
-      console.log(`⚠️ Duplicate postback ignored for trans_id ${trans_id}`);
-      return res.send("DUPLICATE");
-    }
-
     const parsedStatus = parseInt(status, 10);
-    const conversionRate = 25; // ✅ 1 USD = 25 points
+    const conversionRate = 25; // 1 USD = 25 points
 
+    // ✅ Only credit successful surveys
     if (parsedStatus === 1) {
-      // ✅ Calculate points safely
       const usdValue =
         parseFloat(amount_usd) || parseFloat(amount_local) || 0;
       const points = Math.round(usdValue * conversionRate);
 
       if (points > 0) {
-        // ✅ Credit user
-        user.points += points;
+        user.points = (user.points || 0) + points;
+
         user.notifications.push({
-          message: `🎉 You completed a CPX survey and earned ${points} points! (Transaction: ${trans_id})`,
+          message: `🎉 You earned ${points} points from a CPX survey!`,
         });
 
         await user.save();
 
-        // ✅ Log proof for reference and anti-duplication
-        await Proof.create({
-          user: user._id,
-          email: user.email,
-          task: "CPX Survey",
-          transactionId: trans_id,
-          pointsAwarded: points,
-          ipAddress: ip_click || "N/A",
-          offerId: offer_id || "N/A",
-        });
-
         console.log(
-          `🎉 User ${user_id} credited with ${points} points. New total: ${user.points}`
+          `✅ Credited ${points} points to user ${user.email || user_id}`
         );
       } else {
-        console.log(`⚠️ Postback received but no points could be calculated`);
+        console.log("⚠️ No points calculated from CPX payout.");
       }
-    } else if (parsedStatus === 2) {
-      console.log(`ℹ️ Reversal received for trans_id ${trans_id}`);
-      // Optional: handle reversals by deducting points if needed
+    } else {
+      console.log(`ℹ️ CPX status not success (status=${status})`);
     }
 
-    return res.status(200).send("OK");
+    res.status(200).send("OK");
   } catch (err) {
     console.error("❌ CPX postback error:", err);
-    return res.status(500).send("Error processing postback");
+    res.status(500).send("Server error");
   }
 });
+
 module.exports = router;
