@@ -230,3 +230,4 @@ router.get("/cpx-postback", async (req, res) => {
     return res.status(500).send("Error processing postback");
   }
 });
+module.exports = router;
