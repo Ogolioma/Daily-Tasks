@@ -38,6 +38,7 @@ app.use((req, res, next) => {
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/users", require("./routes/user.routes"));
 app.use("/api/tasks", require("./routes/task.routes"));
+app.use("/api/toluna", require("./routes/toluna.routes"));
 app.use("/api/participant", require("./routes/participant.routes"));
 app.use("/api/cashout", require("./routes/cashout.routes"));
 app.use("/api/admin", require("./routes/admin.routes"));
