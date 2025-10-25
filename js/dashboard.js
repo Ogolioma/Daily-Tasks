@@ -202,44 +202,27 @@ async function openTolunaSurvey(userId) {
 
   let refreshTimer = null;
 
-  async function loadTolunaSurvey() {
-    try {
-      const res = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${userId}`);
-      const data = await res.json();
+  async function fetchTolunaSurveys(userId) {
+  try {
+    const response = await fetch(`/api/toluna/get-surveys/${userId}`);
 
-      if (data.success && data.surveys.length > 0) {
-        instructions.innerHTML = `
-          <ul style="padding:0;list-style:none;">
-            ${data.surveys
-              .map(
-                (s) => `
-              <li style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:10px;">
-                <a href="${s.SurveyURL}" target="_blank" style="font-weight:600;color:#007bff;">
-                  ${s.SurveyName || "Toluna Survey"}
-                </a><br>
-                <small>${s.RewardPoints || 0} pts • ${s.EstimatedLOI || 0} mins</small>
-              </li>`
-              )
-              .join("")}
-          </ul>
-          <p style="margin-top:10px;color:#666;font-size:14px;text-align:center;">
-            🔁 Surveys refresh automatically every 1 minute.
-          </p>
-        `;
-      } else {
-        instructions.innerHTML = `
-          <p style="color:red;text-align:center;">
-            No Toluna surveys available right now. Please check back later.
-          </p>`;
-      }
-    } catch (error) {
-      console.error("Toluna survey fetch error:", error);
-      instructions.innerHTML = `
-        <p style="color:red;text-align:center;">
-          ⚠️ Network error while fetching surveys. Check your connection and try again.
-        </p>`;
+    if (!response.ok) {
+      throw new Error("Failed to fetch surveys");
     }
+
+    const surveys = await response.json();
+    if (!surveys || surveys.length === 0) {
+      console.log("No Toluna surveys available");
+      return [];
+    }
+
+    console.log("✅ Toluna surveys fetched:", surveys);
+    return surveys;
+  } catch (error) {
+    console.error("❌ Toluna fetch error:", error.message);
+    return [];
   }
+}
 
   // Load immediately
   await loadTolunaSurvey();

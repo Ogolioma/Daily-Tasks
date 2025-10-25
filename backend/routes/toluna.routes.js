@@ -1,52 +1,32 @@
 const express = require("express");
-const axios = require("axios");
-const crypto = require("crypto");
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const router = express.Router();
 
-// ===== CONFIG =====
-const GUID = "674C993C-EEE5-468F-ACA7-B340D87CD738"; // Your EN-US GUID
-const PARTNER_AUTH_KEY = "cab4f708-f81f-4ad6-b4d0-cfee0fb65a7d"; // Your Partner Auth Key
-const SECRET_KEY = "AysetGABgao7To83UIZD7aUTokMyP62"; // Your Secret Key
-const BASE_URL = "https://training.ups.toluna.com"; // Sandbox/Test base URL
+// ✅ Replace with your actual partner GUID from Alin
+const PARTNER_GUID = "674C993C-EEE5-468F-ACA7-B340D87CD738";
 
-// ===== Utility: HMAC signature =====
-function signData(data) {
-  return crypto.createHmac("sha256", SECRET_KEY).update(data).digest("hex");
-}
+// ✅ GET Toluna surveys for a member
+router.get("/get-surveys/:memberCode", async (req, res) => {
+  const { memberCode } = req.params;
 
-// ===== Get Surveys (Test Environment) =====
-router.get("/get-surveys/:userId", async (req, res) => {
+  const url = `http://training.ups.toluna.com/IntegratedPanelService/api/Surveys/?memberCode=${memberCode}&partnerGuid=${PARTNER_GUID}&numberOfSurveys=10&mobileCompatible=true&deviceTypeIDs=1&deviceTypeIDs=2`;
+
+  console.log("🔍 Fetching Toluna surveys from:", url);
+
   try {
-    let { userId } = req.params;
-    userId = String(userId).replace(/ObjectId\(|\)|'|"/g, "");
+    const response = await fetch(url);
 
-    const timestamp = Math.floor(Date.now() / 1000);
-    const device = "mobile";
-    const isTesting = true;
+    if (!response.ok) {
+      console.error("Toluna error:", response.statusText);
+      return res.status(response.status).json({ error: "Failed to fetch surveys" });
+    }
 
-    // 🔐 Generate signature
-    const dataToSign = `${GUID}${userId}${timestamp}${SECRET_KEY}`;
-    const signature = signData(dataToSign);
-
-    // 🧠 Construct full Toluna URL
-    const url = `${BASE_URL}/external/sample/surveylist?panelGUID=${GUID}&partnerAuthKey=${PARTNER_AUTH_KEY}&partnerRespondentID=${userId}&signature=${signature}&timestamp=${timestamp}&isTesting=${isTesting}&device=${device}`;
-
-    // 🛰 Fetch surveys from Toluna
-    const response = await axios.get(url);
-    const surveys = response.data?.Surveys || [];
-
-    res.json({
-      success: true,
-      surveys,
-      total: surveys.length,
-    });
+    const data = await response.json();
+    res.json(data);
   } catch (err) {
-    console.error("❌ Toluna get-surveys error:", err.response?.data || err.message);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch Toluna surveys",
-    });
+    console.error("Toluna get-surveys error:", err.message);
+    res.status(500).json({ error: "Server error while fetching Toluna surveys" });
   }
 });
 
