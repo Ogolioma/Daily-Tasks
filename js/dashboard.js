@@ -131,31 +131,25 @@ async function loadTasks(freshUser) {
     const container = document.getElementById("taskList");
     container.innerHTML = "";
 
-    // ✅ Always add CPX Surveys card first
     const localUser = JSON.parse(localStorage.getItem("user"));
     const userId = localUser.id || localUser._id;
 
-    // ✅ TOLUNA SURVEYS CARD
-    /*const tolunaCard = document.createElement("div");
+    // === Toluna Surveys Card ===
+    const tolunaCard = document.createElement("div");
     tolunaCard.className = "task-card";
     tolunaCard.innerHTML = `
       <h4>Toluna Surveys</h4>
       <p>Complete Toluna surveys and earn points</p>
     `;
+    tolunaCard.addEventListener("click", () => openTolunaSurvey(userId));
+    container.appendChild(tolunaCard);
 
-    tolunaCard.addEventListener("click", () => {
-      openTolunaSurvey(userId);
-    });
-
-    container.appendChild(tolunaCard); */
-
+    // === CPX Surveys Card ===
     const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=28899&ext_user_id=${userId}&secure_hash=NUTVv3RBQhWcYMjYTFFcYfqh8KTJ43yc`;
-
     const cpxCard = document.createElement("div");
     cpxCard.className = "task-card";
     cpxCard.innerHTML = `
       <h4>CPX Surveys</h4>
-      <p class="task-points"></p>
       <p>Complete surveys and earn points</p>
     `;
     cpxCard.addEventListener("click", () => {
@@ -166,9 +160,9 @@ async function loadTasks(freshUser) {
       `;
       document.getElementById("taskModal").style.display = "flex";
     });
-    container.appendChild(cpxCard); // 👈 Prepend CPX card
+    container.appendChild(cpxCard);
 
-    // Now render DB tasks after CPX
+    // === Load Database Tasks ===
     let hasTasks = false;
     tasks.forEach((task) => {
       if (freshUser.completedTasks.includes(task._id)) return;
@@ -196,7 +190,7 @@ async function loadTasks(freshUser) {
   }
 }
 
-// === TOLUNA HELPER ===
+// === Toluna Surveys Helper ===
 async function openTolunaSurvey(userId) {
   const modal = document.getElementById("taskModal");
   const title = document.getElementById("taskTitle");
@@ -210,16 +204,24 @@ async function openTolunaSurvey(userId) {
 
   async function loadTolunaSurvey() {
     try {
-      const res = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/generate-url/${userId}`);
+      const res = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${userId}`);
       const data = await res.json();
 
-      if (data.success && data.surveyUrl) {
+      if (data.success && data.surveys.length > 0) {
         instructions.innerHTML = `
-          <iframe 
-            src="${data.surveyUrl}" 
-            id="tolunaFrame"
-            style="width:100%;height:600px;border:none;border-radius:10px;">
-          </iframe>
+          <ul style="padding:0;list-style:none;">
+            ${data.surveys
+              .map(
+                (s) => `
+              <li style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:10px;">
+                <a href="${s.SurveyURL}" target="_blank" style="font-weight:600;color:#007bff;">
+                  ${s.SurveyName || "Toluna Survey"}
+                </a><br>
+                <small>${s.RewardPoints || 0} pts • ${s.EstimatedLOI || 0} mins</small>
+              </li>`
+              )
+              .join("")}
+          </ul>
           <p style="margin-top:10px;color:#666;font-size:14px;text-align:center;">
             🔁 Surveys refresh automatically every 1 minute.
           </p>
@@ -227,25 +229,25 @@ async function openTolunaSurvey(userId) {
       } else {
         instructions.innerHTML = `
           <p style="color:red;text-align:center;">
-            Failed to load Toluna survey. Please try again later.
+            No Toluna surveys available right now. Please check back later.
           </p>`;
       }
     } catch (error) {
       console.error("Toluna survey fetch error:", error);
       instructions.innerHTML = `
         <p style="color:red;text-align:center;">
-          ⚠️ Network error while fetching survey. Check your connection and try again.
+          ⚠️ Network error while fetching surveys. Check your connection and try again.
         </p>`;
     }
   }
 
-  // First load
+  // Load immediately
   await loadTolunaSurvey();
 
-  // Refresh every 1 minute
+  // Refresh every minute
   refreshTimer = setInterval(loadTolunaSurvey, 60000);
 
-  // Cleanup interval when modal closes
+  // Close modal properly
   const closeBtn = document.getElementById("closeModal");
   if (closeBtn) {
     closeBtn.onclick = () => {
@@ -255,7 +257,6 @@ async function openTolunaSurvey(userId) {
     };
   }
 
-  // Optional: close modal when clicking outside
   window.onclick = (event) => {
     if (event.target === modal) {
       modal.style.display = "none";
