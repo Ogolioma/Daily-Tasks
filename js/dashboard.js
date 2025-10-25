@@ -190,47 +190,60 @@ async function loadTasks(freshUser) {
   }
 }
 
-// === Toluna Surveys Helper ===
+// === TOLUNA HELPER ===
 async function openTolunaSurvey(userId) {
   const modal = document.getElementById("taskModal");
   const title = document.getElementById("taskTitle");
   const instructions = document.getElementById("taskInstructions");
 
   title.textContent = "Toluna Surveys";
-  instructions.innerHTML = `<p style="color:#777;">Loading surveys...</p>`;
+  instructions.innerHTML = `<p style="color:#777;">Loading Toluna surveys...</p>`;
   modal.style.display = "flex";
 
   let refreshTimer = null;
 
-  async function fetchTolunaSurveys(userId) {
-  try {
-    const response = await fetch(`/api/toluna/get-surveys/${userId}`);
+  // ✅ Define the function first
+  async function loadTolunaSurvey() {
+    try {
+      // Use the new API route for fetching surveys
+      const res = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${userId}`);
+      const data = await res.json();
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch surveys");
+      console.log("Toluna API response:", data);
+
+      if (data && Array.isArray(data) && data.length > 0) {
+        // Build survey list
+        let listHTML = `<p style="color:#444;">Available Surveys:</p>`;
+        data.forEach((survey) => {
+          listHTML += `
+            <div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">
+              <strong>${survey.SurveyName || "Survey"}</strong><br>
+              <span style="color:#777;">Length: ${survey.EstimatedLength || "N/A"} mins</span><br>
+              <a href="${survey.SurveyLink}" target="_blank" style="color:#007bff;">Start Survey</a>
+            </div>
+          `;
+        });
+
+        instructions.innerHTML = listHTML + `
+          <p style="margin-top:10px;color:#666;font-size:14px;text-align:center;">
+            🔁 Surveys refresh automatically every 1 minute.
+          </p>`;
+      } else {
+        instructions.innerHTML = `<p style="color:#555;text-align:center;">No Toluna surveys available right now. Please check back later.</p>`;
+      }
+    } catch (error) {
+      console.error("Toluna fetch error:", error);
+      instructions.innerHTML = `<p style="color:red;text-align:center;">⚠️ Network error fetching surveys. Please try again.</p>`;
     }
-
-    const surveys = await response.json();
-    if (!surveys || surveys.length === 0) {
-      console.log("No Toluna surveys available");
-      return [];
-    }
-
-    console.log("✅ Toluna surveys fetched:", surveys);
-    return surveys;
-  } catch (error) {
-    console.error("❌ Toluna fetch error:", error.message);
-    return [];
   }
-}
 
-  // Load immediately
+  // ✅ Call the function *after* defining it
   await loadTolunaSurvey();
 
-  // Refresh every minute
+  // ✅ Refresh every 1 minute
   refreshTimer = setInterval(loadTolunaSurvey, 60000);
 
-  // Close modal properly
+  // ✅ Cleanup on modal close
   const closeBtn = document.getElementById("closeModal");
   if (closeBtn) {
     closeBtn.onclick = () => {
