@@ -45,7 +45,7 @@ router.post("/create-respondent", async (req, res) => {
     const { memberCode = "test_1" } = req.body;
 
     const plain = {
-      PartnerGUID,
+      PartnerGUID: PARTNER_GUID,
       MemberCode: memberCode,
       BirthDate: "06/21/1985",
       IsActive: true,
@@ -94,7 +94,7 @@ router.post("/get-surveys", async (req, res) => {
     if (!respondentCode) return res.status(400).json({ success: false, message: "respondentCode required" });
 
     const plain = {
-      PartnerGUID,
+      PartnerGUID: PARTNER_GUID,
       MemberCode: respondentCode,
       NumberOfSurveys: 10,
       MobileCompatible: false,
