@@ -190,7 +190,6 @@ async function loadTasks(freshUser) {
   }
 }
 
-
 async function openTolunaSurvey(userId) {
   // === 1. Grab modal elements safely ===
   const modal = document.getElementById("taskModal");
@@ -214,7 +213,7 @@ async function openTolunaSurvey(userId) {
   const loadSurveys = async () => {
     try {
       // ---- CREATE RESPONDENT (POST) ----
-      const createRes = await fetch("/api/toluna/create-respondent", {
+      const createRes = await fetch("https://daily-tasks-556b.onrender.com/api/toluna/create-respondent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ memberCode: userId })
@@ -231,7 +230,7 @@ async function openTolunaSurvey(userId) {
       }
 
       // ---- GET SURVEYS (POST) ----
-      const surveysRes = await fetch("/api/toluna/get-surveys", {
+      const surveysRes = await fetch("https://daily-tasks-556b.onrender.com/api/toluna/get-surveys", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ respondentCode: userId })
