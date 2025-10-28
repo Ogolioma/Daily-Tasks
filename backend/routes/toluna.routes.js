@@ -1,52 +1,52 @@
+
 const express = require("express");
 const fetch = require("node-fetch");
-
 const router = express.Router();
 
-const BASE_URL = "http://training.ups.toluna.com/IntegratedPanelService/api";
 const PARTNER_GUID = "674C993C-EEE5-468F-ACA7-B340D87CD738";
+const BASE_URL = "http://training.ups.toluna.com/IntegratedPanelService/api";
 
-// ===== Create a Member on Toluna Sandbox =====
+// ✅ Create Member (must happen before fetching surveys)
 router.post("/create-member/:userId", async (req, res) => {
   const { userId } = req.params;
-  const memberCode = `test_${userId}`; // unique member for each user
+  const memberCode = `test_${userId}`; // format Alin expects
 
   const body = {
-    MemberCode: memberCode,
-    PartnerGUID: PARTNER_GUID,
-    Email: `${memberCode}@example.com`,
-    CountryISO2: "US",
-    LanguageISO2: "EN",
-    Gender: "M",
-    BirthDate: "1995-01-01",
+    partnerGuid: PARTNER_GUID,
+    memberCode,
+    firstName: "Test",
+    lastName: "User",
+    email: `${memberCode}@example.com`,
+    gender: "M",
+    countryId: 840, // 840 = USA, use correct country if needed
+    languageId: 1, // English
+    postalCode: "10001",
   };
 
   try {
-    const response = await fetch(`${BASE_URL}/Member`, {
+    const response = await fetch(`${BASE_URL}/Members/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
     const data = await response.json();
-    console.log("Create Member Response:", data);
 
     if (!response.ok) {
-      return res.status(response.status).json({
-        success: false,
-        message: "Failed to create member",
-        details: data,
-      });
+      console.error("Toluna create-member error:", data);
+      return res.status(response.status).json({ error: data });
     }
 
-    res.json({ success: true, memberCode, data });
+    console.log("✅ Member created:", data);
+    res.json({ success: true, data });
   } catch (err) {
-    console.error("Create member error:", err.message);
-    res.status(500).json({ success: false, message: "Server error creating member" });
+    console.error("Toluna create-member exception:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// ===== Get Surveys for a Member =====
+
+// ✅ Get Surveys (only works *after* member creation)
 router.get("/get-surveys/:userId", async (req, res) => {
   const { userId } = req.params;
   const memberCode = `test_${userId}`;
@@ -57,24 +57,17 @@ router.get("/get-surveys/:userId", async (req, res) => {
 
   try {
     const response = await fetch(url);
-    const text = await response.text();
+    const data = await response.json();
 
     if (!response.ok) {
-      console.error("Toluna error:", response.statusText, text);
-      return res.status(response.status).json({ error: "Failed to fetch surveys", details: text });
-    }
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = text;
+      console.error("Toluna error:", data);
+      return res.status(response.status).json({ error: data });
     }
 
     res.json(data);
   } catch (err) {
-    console.error("Toluna get-surveys error:", err.message);
-    res.status(500).json({ error: "Server error while fetching Toluna surveys" });
+    console.error("Toluna get-surveys error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
