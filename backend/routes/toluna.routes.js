@@ -1,109 +1,142 @@
+// toluna.routes.js
 const express = require("express");
 const fetch = require("node-fetch");
+const crypto = require("crypto");
 
 const router = express.Router();
 
-// Toluna API base + your sandbox Partner GUID
-const BASE_URL = "http://training.ups.toluna.com/IntegratedPanelService/api";
-const PARTNER_GUID = "674C993C-EEE5-468F-ACA7-B340D87CD738";
+/* ------------------------------------------------------------------ */
+/* -------------------------- CONFIG -------------------------------- */
+/* ------------------------------------------------------------------ */
+const BASE_URL = "https://training.ups.toluna.com/IntegratedPanelService/api";
 
-// ===============================
-// ✅ CREATE RESPONDENT (REGISTER)
-// ===============================
+const PARTNER_GUID = "674C993C-EEE5-468F-ACA7-B340D87CD738";
+const PARTNER_AUTH_KEY = "cab4f708-f81f-4ad6-b4d0-cfee0fb65a7d";
+const ENCRYPTION_KEY = "AysetGaBgao7To83UlZd7aUTokMyP62"; // 32 bytes
+
+/* ------------------------------------------------------------------ */
+/* -------------------------- HELPERS ------------------------------- */
+/* ------------------------------------------------------------------ */
+function encrypt(plainObj) {
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv("aes-256-cbc", Buffer.from(ENCRYPTION_KEY), iv);
+  let enc = cipher.update(JSON.stringify(plainObj), "utf8", "base64");
+  enc += cipher.final("base64");
+  return { Data: enc, IV: iv.toString("base64") };
+}
+
+function decrypt({ Data, IV }) {
+  const decipher = crypto.createDecipheriv(
+    "aes-256-cbc",
+    Buffer.from(ENCRYPTION_KEY),
+    Buffer.from(IV, "base64")
+  );
+  let dec = decipher.update(Data, "base64", "utf8");
+  dec += decipher.final("utf8");
+  return JSON.parse(dec);
+}
+
+function signBody(bodyJsonString) {
+  return crypto
+    .createHmac("sha256", PARTNER_AUTH_KEY)
+    .update(bodyJsonString)
+    .digest("hex");
+}
+
+/* ------------------------------------------------------------------ */
+/* -------------------------- CREATE RESPONDENT --------------------- */
+/* ------------------------------------------------------------------ */
 router.post("/create-respondent", async (req, res) => {
   try {
-    // If frontend sends a memberCode, use it. Else default to test_1
-    const { memberCode } = req.body;
-    const respondentCode = memberCode || "test_1";
+    const { memberCode = "test_1" } = req.body;
 
-    const payload = {
+    const plain = {
       PartnerGUID: PARTNER_GUID,
-      MemberCode: respondentCode,
+      MemberCode: memberCode,
       BirthDate: "06/21/1985",
       IsActive: true,
       IsTest: true,
-      AnsweredQuestions: [
-        {
-          QuestionID: 1001007,
-          AnswerID: 2000247,
-        },
-      ],
+      AnsweredQuestions: [{ QuestionID: 1001007, AnswerID: 2000247 }],
     };
 
-    const response = await fetch(`${BASE_URL}/Respondent`, {
+    const encrypted = encrypt(plain);
+    const bodyStr = JSON.stringify(encrypted);
+    const signature = signBody(bodyStr);
+
+    const apiRes = await fetch(`${BASE_URL}/Respondent`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+        "X-Toluna-Signature": signature,
+      },
+      body: bodyStr,
     });
 
-    const data = await response.text();
-    console.log("Create Respondent response:", data);
+    const raw = await apiRes.text();
+    console.log("Create raw:", raw);
 
-    if (!response.ok) {
-      return res.status(response.status).json({
-        success: false,
-        message: "Failed to create respondent",
-        details: data,
-      });
+    if (!apiRes.ok) {
+      return res.status(apiRes.status).json({ success: false, error: raw });
     }
 
-    res.json({ success: true, respondentCode, data });
-  } catch (err) {
-    console.error("Toluna create-respondent error:", err.message);
-    res.status(500).json({
-      success: false,
-      message: "Server error creating Toluna respondent",
-    });
+    const encryptedResp = JSON.parse(raw);
+    const decrypted = decrypt(encryptedResp);
+    res.json({ success: true, data: decrypted });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: e.message });
   }
 });
 
-// ===============================
-// ✅ GET SURVEYS FOR RESPONDENT
-// ===============================
-router.get("/get-surveys", async (req, res) => {
+/* ------------------------------------------------------------------ */
+/* -------------------------- GET SURVEYS -------------------------- */
+/* ------------------------------------------------------------------ */
+router.post("/get-surveys", async (req, res) => {
   try {
-    const { respondentCode } = req.query;
+    const { respondentCode } = req.body;
+    if (!respondentCode)
+      return res.status(400).json({ success: false, message: "respondentCode required" });
 
-    if (!respondentCode) {
-      return res.status(400).json({
-        success: false,
-        message: "respondentCode is required",
-      });
-    }
+    const plain = {
+      PartnerGUID: PARTNER_GUID,
+      MemberCode: respondentCode,
+      NumberOfSurveys: 10,
+      MobileCompatible: false,
+      DeviceTypeIDs: [1, 2],
+    };
 
-    const url = `${BASE_URL}/Surveys/?memberCode=${respondentCode}&partnerGuid=${PARTNER_GUID}&numberOfSurveys=10&mobileCompatible=false&deviceTypeIDs=1&deviceTypeIDs=2`;
+    const encrypted = encrypt(plain);
+    const bodyStr = JSON.stringify(encrypted);
+    const signature = signBody(bodyStr);
 
-    console.log("🔍 Fetching Toluna surveys from:", url);
-
-    const response = await fetch(url);
-
-    const text = await response.text();
-    if (!response.ok) {
-      console.error("Toluna error:", text);
-      return res.status(response.status).json({
-        success: false,
-        message: "Failed to fetch surveys",
-        details: text,
-      });
-    }
-
-    const data = JSON.parse(text);
-    res.json({ success: true, data });
-  } catch (err) {
-    console.error("Toluna get-surveys error:", err.message);
-    res.status(500).json({
-      success: false,
-      message: "Server error fetching Toluna surveys",
+    const apiRes = await fetch(`${BASE_URL}/Surveys`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Toluna-Signature": signature,
+      },
+      body: bodyStr,
     });
+
+    const raw = await apiRes.text();
+    if (!apiRes.ok) {
+      console.error("Surveys error:", raw);
+      return res.status(apiRes.status).json({ success: false, error: raw });
+    }
+
+    const encryptedResp = JSON.parse(raw);
+    const decrypted = decrypt(encryptedResp);
+    res.json({ success: true, surveys: decrypted });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ success: false, message: e.message });
   }
 });
 
-// ===============================
-// ✅ Health Check
-// ===============================
-router.get("/ping", (req, res) => {
-  res.send("Toluna route working ✅");
-});
+/* ------------------------------------------------------------------ */
+/* -------------------------- PING --------------------------------- */
+/* ------------------------------------------------------------------ */
+router.get("/ping", (req, res) => res.send("Toluna OK"));
 
 module.exports = router;
 
