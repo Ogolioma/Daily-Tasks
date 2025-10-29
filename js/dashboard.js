@@ -214,10 +214,12 @@ async function openTolunaSurvey(userId) {
     try {
       // ---- CREATE RESPONDENT (POST) ----
       const createRes = await fetch("https://daily-tasks-556b.onrender.com/api/toluna/create-respondent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberCode: userId })
-      });
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ 
+    memberCode: userId // MUST BE "memberCode"
+  })
+});
 
       // Always parse text first to avoid JSON errors on 4xx/5xx
       const createText = await createRes.text();
