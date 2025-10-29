@@ -223,7 +223,7 @@ async function openTolunaSurvey(userId) {
     const memberCode = createJson.memberCode || chosenMemberCode;
 
     // 2) Get surveys (Toluna GET)
-    const surveysRes = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys?memberCode=${encodeURIComponent(memberCode)}`);
+    const surveysRes = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}`);
     const surveysJson = await surveysRes.json();
 
     if (!surveysJson.success) {
