@@ -24,12 +24,14 @@ router.post("/create-respondent", async (req, res) => {
     });
 
     const text = await response.text();
+
+    // Handle already-existing respondent gracefully
     if (!response.ok && !text.includes("already exists")) {
       console.error("Toluna create error:", response.status, text);
       return res.status(400).json({ success: false, message: text });
     }
 
-    console.log("Toluna respondent created successfully:", body.MemberCode);
+    console.log("✅ Toluna respondent created successfully:", body.MemberCode);
     return res.json({ success: true, memberCode: body.MemberCode });
   } catch (err) {
     console.error("Toluna create-respondent error:", err);
@@ -40,10 +42,9 @@ router.post("/create-respondent", async (req, res) => {
 // === Get Surveys ===
 router.get("/get-surveys/:memberCode", async (req, res) => {
   const { memberCode } = req.params;
-
   const url = `${BASE_URL}/Surveys/?memberCode=${memberCode}&partnerGuid=${PARTNER_GUID}&numberOfSurveys=10&mobileCompatible=false&deviceTypeIDs=1&deviceTypeIDs=2`;
 
-  console.log("Fetching Toluna surveys from:", url);
+  console.log("📡 Fetching Toluna surveys from:", url);
 
   try {
     const response = await fetch(url);
@@ -51,7 +52,11 @@ router.get("/get-surveys/:memberCode", async (req, res) => {
 
     if (!response.ok) {
       console.error("Toluna error:", response.statusText, text);
-      return res.status(response.status).json({ success: false, message: "Failed to fetch surveys", details: text });
+      return res.status(response.status).json({
+        success: false,
+        message: "Failed to fetch surveys",
+        details: text,
+      });
     }
 
     let data;
@@ -61,10 +66,27 @@ router.get("/get-surveys/:memberCode", async (req, res) => {
       data = text;
     }
 
-    res.json({ success: true, data });
+    // ✅ Normalize the data to always include SurveyURL
+    const normalized = Array.isArray(data)
+      ? data.map((s) => ({
+          SurveyName: s.SurveyName || s.Title || "Toluna Survey",
+          SurveyURL:
+            s.SurveyURL ||
+            s.Url ||
+            s.UrlToSurvey ||
+            s.SurveyLink ||
+            s.RedirectURL ||
+            "#",
+          EstimatedLength: s.EstimatedLength || s.EstimatedLOI || "N/A",
+        }))
+      : [];
+
+    return res.json({ success: true, data: normalized });
   } catch (err) {
     console.error("Toluna get-surveys error:", err.message);
-    res.status(500).json({ success: false, message: "Server error fetching Toluna surveys" });
+    res
+      .status(500)
+      .json({ success: false, message: "Server error fetching Toluna surveys" });
   }
 });
 

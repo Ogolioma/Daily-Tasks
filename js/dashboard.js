@@ -201,12 +201,10 @@ async function openTolunaSurvey(userId) {
   modal.style.display = "flex";
 
   try {
-    // Decide which memberCode to use.
-    // For sandbox testing we default to "test_1".
-    // If you have stored Toluna member codes for users, use that instead.
+    // Use saved or test member code
     let chosenMemberCode = localStorage.getItem("tolunaMemberCode") || "test_1";
 
-    // 1) Create respondent (optional - safe to call: test_1 will exist)
+    // Step 1: Create respondent (safe if exists)
     const createRes = await fetch("https://daily-tasks-556b.onrender.com/api/toluna/create-respondent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -215,53 +213,73 @@ async function openTolunaSurvey(userId) {
 
     const createJson = await createRes.json();
     if (!createJson.success) {
-      instructions.innerHTML = `<p style="color:red">Could not create respondent: ${createJson.details || createJson.message || JSON.stringify(createJson)}</p>`;
+      instructions.innerHTML = `<p style="color:red">Could not create respondent: ${
+        createJson.details || createJson.message || JSON.stringify(createJson)
+      }</p>`;
       return;
     }
 
-    // Use returned memberCode (in case server responded with it)
     const memberCode = createJson.memberCode || chosenMemberCode;
 
-    // 2) Get surveys (Toluna GET)
-    const surveysRes = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}`);
+    // Step 2: Fetch available surveys
+    const surveysRes = await fetch(
+      `https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}`
+    );
     const surveysJson = await surveysRes.json();
 
     if (!surveysJson.success) {
-      instructions.innerHTML = `<p style="color:red">Could not load surveys: ${surveysJson.details || JSON.stringify(surveysJson)}</p>`;
+      instructions.innerHTML = `<p style="color:red">Could not load surveys: ${
+        surveysJson.details || JSON.stringify(surveysJson)
+      }</p>`;
       return;
     }
 
     const data = surveysJson.data;
-    // If Toluna returns an object with a Surveys array, adapt accordingly.
-    const surveys = (data && data.Surveys) ? data.Surveys : (Array.isArray(data) ? data : []);
+    const surveys = (data && data.Surveys)
+      ? data.Surveys
+      : Array.isArray(data)
+      ? data
+      : [];
 
     if (!surveys || surveys.length === 0) {
       instructions.innerHTML = `<p style="color:#555;text-align:center;">No Toluna surveys available right now.</p>`;
       return;
     }
 
-    // Build UI
+    // Step 3: Build survey list
     let html = `<p style="color:#444">Available Surveys:</p>`;
-    surveys.forEach(s => {
-      // s.SurveyURL or s.Url may differ — inspect actual response and adjust
+    surveys.forEach((s) => {
       const url = s.SurveyURL || s.Url || s.UrlToSurvey || "#";
       const name = s.SurveyName || s.Title || "Toluna Survey";
       const length = s.EstimatedLength || s.EstimatedLOI || "N/A";
+
       html += `
         <div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">
           <strong>${name}</strong><br>
           <small>${length} mins</small><br>
-          <a href="${url}" target="_blank" style="color:#007bff;">Start Survey</a>
+          <button class="open-survey-btn" data-url="${url}" style="color:#007bff;background:none;border:none;cursor:pointer;text-decoration:underline;">Start Survey</button>
         </div>`;
     });
 
-    instructions.innerHTML = html + `<p style="margin-top:10px;color:#666;text-align:center;">Auto-refresh every 1 minute.</p>`;
+    instructions.innerHTML = html;
+
+    // Step 4: Open surveys properly
+    document.querySelectorAll(".open-survey-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const url = e.target.getAttribute("data-url");
+        if (url && url !== "#") {
+          window.open(url, "_blank"); // open in new tab
+          modal.style.display = "none"; // close modal
+        } else {
+          alert("Survey link not available.");
+        }
+      });
+    });
   } catch (err) {
     console.error("openTolunaSurvey error:", err);
     instructions.innerHTML = `<p style="color:red">Network error: ${err.message}</p>`;
   }
 }
-
 
 function setupTaskToggle() {
   const taskList = document.getElementById("taskList");
