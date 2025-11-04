@@ -203,11 +203,11 @@ async function openTolunaSurvey(userId) {
   try {
     let chosenMemberCode = localStorage.getItem("tolunaMemberCode") || "test_1";
 
-    // Create respondent
+    // 1️⃣ Create respondent
     const createRes = await fetch("https://daily-tasks-556b.onrender.com/api/toluna/create-respondent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ MemberCode: chosenMemberCode })
+      body: JSON.stringify({ MemberCode: chosenMemberCode }),
     });
 
     const createJson = await createRes.json();
@@ -218,7 +218,7 @@ async function openTolunaSurvey(userId) {
 
     const memberCode = createJson.memberCode || chosenMemberCode;
 
-    // Get surveys
+    // 2️⃣ Get surveys
     const surveysRes = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}`);
     const surveysJson = await surveysRes.json();
 
@@ -227,28 +227,29 @@ async function openTolunaSurvey(userId) {
       return;
     }
 
-    const data = surveysJson.data;
-    const surveys = Array.isArray(data) ? data : (data.Surveys || []);
+    const surveys = Array.isArray(surveysJson.data) ? surveysJson.data : [];
 
-    if (!surveys || surveys.length === 0) {
+    if (!surveys.length) {
       instructions.innerHTML = `<p style="color:#555;text-align:center;">No Toluna surveys available right now.</p>`;
       return;
     }
 
-    // Build survey list
+    // 3️⃣ Build clickable survey list
     let html = `<p style="color:#444">Available Surveys:</p>`;
-    surveys.forEach((s) => {
-      const url = s.URL || s.Url || s.SurveyURL || s.UrlToSurvey;
-      const name = s.Name || s.SurveyName || "Toluna Survey";
-      const duration = s.Duration || s.EstimatedLength || "N/A";
+    surveys.forEach((s, i) => {
+      console.log("Toluna Survey Object:", s); // 🟢 Debug log
+
+      const url = s.SurveyURL || s.URL || s.Url || s.UrlToSurvey || "#";
+      const name = s.SurveyName || s.Title || `Survey #${i + 1}`;
+      const length = s.EstimatedLength || "N/A";
 
       html += `
         <div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">
           <strong>${name}</strong><br>
-          <small>${duration} mins</small><br>
+          <small>${length} mins</small><br>
           ${
-            url
-              ? `<a href="${url}" target="_blank" style="color:#007bff;">Start Survey</a>`
+            url && url !== "#"
+              ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#007bff;">Start Survey</a>`
               : `<span style="color:#999;">Survey link unavailable</span>`
           }
         </div>`;
@@ -260,6 +261,7 @@ async function openTolunaSurvey(userId) {
     instructions.innerHTML = `<p style="color:red">Network error: ${err.message}</p>`;
   }
 }
+
 function setupTaskToggle() {
   const taskList = document.getElementById("taskList");
   const tasks = Array.from(taskList.children);

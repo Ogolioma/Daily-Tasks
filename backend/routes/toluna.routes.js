@@ -25,7 +25,7 @@ router.post("/create-respondent", async (req, res) => {
 
     const text = await response.text();
 
-    // Handle already-existing respondent gracefully
+    // Handle existing respondent gracefully
     if (!response.ok && !text.includes("already exists")) {
       console.error("Toluna create error:", response.status, text);
       return res.status(400).json({ success: false, message: text });
@@ -66,28 +66,36 @@ router.get("/get-surveys/:memberCode", async (req, res) => {
       data = text;
     }
 
-    // ✅ Normalize the data to always include SurveyURL
+    // 🟢 Log full Toluna raw response for debugging
+    console.log("🟢 Toluna API raw response:", data);
+
+    // ✅ Normalize data to ensure SurveyURL always exists
     const normalized = Array.isArray(data)
-      ? data.map((s) => ({
-          SurveyName: s.SurveyName || s.Title || "Toluna Survey",
-          SurveyURL:
+      ? data.map((s) => {
+          const surveyUrl =
             s.SurveyURL ||
+            s.URL ||
             s.Url ||
             s.UrlToSurvey ||
             s.SurveyLink ||
             s.RedirectURL ||
-            "#",
-          EstimatedLength: s.EstimatedLength || s.EstimatedLOI || "N/A",
-        }))
+            (s.RedirectUrls && s.RedirectUrls.Complete) ||
+            "#";
+
+          return {
+            SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
+            SurveyURL: surveyUrl,
+            EstimatedLength: s.EstimatedLength || s.EstimatedLOI || s.LengthOfInterview || "N/A",
+          };
+        })
       : [];
 
     return res.json({ success: true, data: normalized });
   } catch (err) {
     console.error("Toluna get-surveys error:", err.message);
-    res
-      .status(500)
-      .json({ success: false, message: "Server error fetching Toluna surveys" });
+    res.status(500).json({ success: false, message: "Server error fetching Toluna surveys" });
   }
 });
 
 module.exports = router;
+
