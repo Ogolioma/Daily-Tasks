@@ -145,7 +145,7 @@ async function loadTasks(freshUser) {
     container.appendChild(tolunaCard);
 
     // === CPX Surveys Card ===
-    const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=28899&ext_user_id=${userId}&secure_hash=NUTVv3RBQhWcYMjYTFFcYfqh8KTJ43yc`;
+    const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=29856&ext_user_id=${userId}&secure_hash=283Kkyg4ma86yansaRKHRu06NKpQOYgr`;
     const cpxCard = document.createElement("div");
     cpxCard.className = "task-card";
     cpxCard.innerHTML = `
