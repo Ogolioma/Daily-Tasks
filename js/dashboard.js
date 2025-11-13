@@ -135,14 +135,14 @@ async function loadTasks(freshUser) {
     const userId = localUser.id || localUser._id;
 
     // === Toluna Surveys Card ===
-    const tolunaCard = document.createElement("div");
+    /*const tolunaCard = document.createElement("div");
     tolunaCard.className = "task-card";
     tolunaCard.innerHTML = `
       <h4>Toluna Surveys</h4>
       <p>Complete Toluna surveys and earn points</p>
     `;
     tolunaCard.addEventListener("click", () => openTolunaSurvey(userId));
-    container.appendChild(tolunaCard);
+    container.appendChild(tolunaCard);*/
 
     // === CPX Surveys Card ===
     const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=29856&ext_user_id=${userId}&secure_hash=283Kkyg4ma86yansaRKHRu06NKpQOYgr`;
