@@ -135,14 +135,14 @@ async function loadTasks(freshUser) {
     const userId = localUser.id || localUser._id;
 
     // === Toluna Surveys Card ===
-    /*const tolunaCard = document.createElement("div");
+    const tolunaCard = document.createElement("div");
     tolunaCard.className = "task-card";
     tolunaCard.innerHTML = `
       <h4>Toluna Surveys</h4>
       <p>Complete Toluna surveys and earn points</p>
     `;
     tolunaCard.addEventListener("click", () => openTolunaSurvey(userId));
-    container.appendChild(tolunaCard);*/
+    container.appendChild(tolunaCard);
 
     // === CPX Surveys Card ===
     const cpxUrl = `https://offers.cpx-research.com/index.php?app_id=29856&ext_user_id=${userId}&secure_hash=283Kkyg4ma86yansaRKHRu06NKpQOYgr`;
@@ -201,13 +201,13 @@ async function openTolunaSurvey(userId) {
   modal.style.display = "flex";
 
   try {
-    let chosenMemberCode = localStorage.getItem("tolunaMemberCode") || "test_1";
+    let chosenMemberCode = localStorage.getItem("tolunaMemberCode") || null;
 
-    // 1️⃣ Create respondent
+    // 1️⃣ Create respondent (no culture — backend auto-detects)
     const createRes = await fetch("https://daily-tasks-556b.onrender.com/api/toluna/create-respondent", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ MemberCode: chosenMemberCode }),
+      body: JSON.stringify({}) // Backend auto-detects culture
     });
 
     const createJson = await createRes.json();
@@ -216,10 +216,14 @@ async function openTolunaSurvey(userId) {
       return;
     }
 
-    const memberCode = createJson.memberCode || chosenMemberCode;
+    const memberCode = createJson.memberCode;
+    localStorage.setItem("tolunaMemberCode", memberCode);
 
-    // 2️⃣ Get surveys
-    const surveysRes = await fetch(`https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}`);
+    // 2️⃣ Get surveys (the backend will auto-assign culture again)
+    const surveysRes = await fetch(
+      `https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}`
+    );
+
     const surveysJson = await surveysRes.json();
 
     if (!surveysJson.success) {
@@ -237,10 +241,8 @@ async function openTolunaSurvey(userId) {
     // 3️⃣ Build clickable survey list
     let html = `<p style="color:#444">Available Surveys:</p>`;
     surveys.forEach((s, i) => {
-      console.log("Toluna Survey Object:", s); // 🟢 Debug log
-
-      const url = s.SurveyURL || s.URL || s.Url || s.UrlToSurvey || "#";
-      const name = s.SurveyName || s.Title || `Survey #${i + 1}`;
+      const url = s.SurveyURL || "#";
+      const name = s.SurveyName || `Survey #${i + 1}`;
       const length = s.EstimatedLength || "N/A";
 
       html += `
@@ -248,7 +250,7 @@ async function openTolunaSurvey(userId) {
           <strong>${name}</strong><br>
           <small>${length} mins</small><br>
           ${
-            url && url !== "#"
+            url !== "#"
               ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#007bff;">Start Survey</a>`
               : `<span style="color:#999;">Survey link unavailable</span>`
           }
