@@ -7,7 +7,7 @@ const router = express.Router();
 // ======================================================
 
 // PRODUCTION BASE URLS
-const MEMBER_BASE = "https://ip.surveyrouter.com";
+const MEMBER_BASE = "https://tws.toluna.com";
 const SURVEY_BASE = "https://tws.toluna.com";
 
 // Partner GUIDs by culture
