@@ -128,7 +128,7 @@ router.post("/create-respondent", async (req, res) => {
 // ======================================================
 // GET SURVEYS FOR MEMBER
 // ======================================================
-router.get("/get-surveys/:memberCode/:culture?", async (req, res) => {
+router.get("/get-surveys/:memberCode/:culture", async (req, res) => {
   const { memberCode, culture = "EN-NG" } = req.params;
   const { guid } = getCultureData(culture);
 
