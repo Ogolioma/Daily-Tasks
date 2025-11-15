@@ -7,6 +7,7 @@ const router = express.Router();
 // BASE URLS (PRODUCTION)
 // ======================================================
 const TOLUNA_BASE = "https://tws.toluna.com/ExternalSample";
+const IP_CORE_URL = "http://ip.surveyrouter.com";
 
 // ======================================================
 // CULTURE → Partner GUID MAP
@@ -131,7 +132,7 @@ router.post("/create-respondent", async (req, res) => {
   const attempts = [];
 
   // single canonical endpoint to call (ExternalSample/Respondent)
-  const endpoint = `${TOLUNA_BASE}/Respondent`;
+const endpoint = `${TOLUNA_BASE}/api/externalsample/respondent`;
 
   for (const payload of payloads) {
     try {
