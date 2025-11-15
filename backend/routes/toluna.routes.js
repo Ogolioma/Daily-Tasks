@@ -6,7 +6,7 @@ const router = express.Router();
 // ======================================================
 // BASE URLS (PRODUCTION)
 // ======================================================
-const TOLUNA_BASE = "https://tws.toluna.com/ExternalSample";
+const TOLUNA_BASE = "https://tws.toluna.com";
 const IP_CORE_URL = "http://ip.surveyrouter.com";
 
 // ======================================================
