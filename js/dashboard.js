@@ -221,7 +221,7 @@ async function openTolunaSurvey(userId) {
 
     // 2️⃣ Get surveys (the backend will auto-assign culture again)
     const surveysRes = await fetch(
-      `https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}`
+      `https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}/auto`
     );
 
     const surveysJson = await surveysRes.json();
