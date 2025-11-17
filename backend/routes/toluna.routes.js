@@ -1,17 +1,14 @@
-// toluna.routes.js (production-ready with robust respondent creation + debug)
+// routes/toluna.routes.js
 const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
 
 // ======================================================
-// BASE URLS (PRODUCTION)
+// CONFIG - do not change Toluna URLs (per your request)
 // ======================================================
-const TOLUNA_BASE = "https://tws.toluna.com";
-const IP_CORE_URL = "http://ip.surveyrouter.com";
+const IP_CORE_URL = "https://ip.surveyrouter.com/IntegratedPanelService/api";
 
-// ======================================================
-// CULTURE → Partner GUID MAP
-// ======================================================
+// Culture -> GUID map (use your sheet values)
 const CULTURE_GUIDS = {
   "EN-US": "71070C9C-8D9B-4B65-B11C-7406E5B8D52A",
   "EN-IN": "3FEC87CF-5B1C-4DE2-B420-E3E300553087",
@@ -20,9 +17,7 @@ const CULTURE_GUIDS = {
   "EN-ZA": "7A9B6E1E-2426-4AD7-86E6-768BDD3A7898",
 };
 
-// ======================================================
-// END PAGE URLS
-// ======================================================
+// End pages (keep exact urls you provided)
 const END_PAGE_URLS = {
   FraudTerminate: "https://dailytasks.co/surveys/fraud",
   MaxSurveysReached: "https://dailytasks.co/surveys/max-reached",
@@ -36,9 +31,7 @@ const END_PAGE_URLS = {
   Terminated: "https://dailytasks.co/surveys/terminated",
 };
 
-// ======================================================
-// NOTIFICATION URLS
-// ======================================================
+// Notification URLs (kept exactly as you asked)
 const NOTIFICATION_URLS = {
   CompletionURL: "https://daily-tasks-556b.onrender.com/api/toluna/completed",
   TerminateNotification: "https://daily-tasks-556b.onrender.com/api/toluna/terminated",
@@ -47,243 +40,216 @@ const NOTIFICATION_URLS = {
 };
 
 // ======================================================
-// AUTO CULTURE DETECTION
+// Helpers
 // ======================================================
+function getCultureData(culture = "EN-NG") {
+  const c = (culture || "EN-NG").toUpperCase();
+  const guid = CULTURE_GUIDS[c] || CULTURE_GUIDS["EN-US"];
+  const country = (c.split("-")[1] || "US").toUpperCase();
+  const language = (c.split("-")[0] || "EN").toUpperCase();
+  return { guid, country, language };
+}
+
 async function detectCulture(req) {
   try {
-    const ip =
-      (req.headers["x-forwarded-for"] || "").split(",")[0] ||
-      req.socket.remoteAddress ||
-      "8.8.8.8";
-
+    const ip = (req.headers["x-forwarded-for"] || "").split(",")[0] || req.socket.remoteAddress || "8.8.8.8";
     const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
     const geo = await geoRes.json();
-    const country = geo.country_code;
-
-    switch (country) {
-      case "NG":
-        return "EN-NG";
-      case "IN":
-        return "EN-IN";
-      case "KE":
-        return "EN-KE";
-      case "ZA":
-        return "EN-ZA";
-      case "US":
-        return "EN-US";
-      default:
-        return "EN-US";
+    const cc = (geo && geo.country_code) ? geo.country_code.toUpperCase() : null;
+    switch (cc) {
+      case "NG": return "EN-NG";
+      case "IN": return "EN-IN";
+      case "KE": return "EN-KE";
+      case "ZA": return "EN-ZA";
+      case "US": return "EN-US";
+      default: return "EN-US";
     }
   } catch (e) {
-    console.warn("detectCulture failed, defaulting to EN-US:", e && e.message);
+    console.warn("detectCulture failed:", e && e.message);
     return "EN-US";
   }
 }
 
-// ======================================================
-// CULTURE LOOKUP
-// ======================================================
-function getCultureData(culture = "EN-NG") {
-  const guid = CULTURE_GUIDS[culture] || CULTURE_GUIDS["EN-US"];
-  const country = (culture.split("-")[1] || "US").toUpperCase();
-  const language = (culture.split("-")[0] || "EN").toUpperCase();
-  return { guid, country, language };
+// Small utility to safe-parse JSON
+async function safeParseTextResponse(res) {
+  const text = await res.text();
+  try { return JSON.parse(text); } catch { return text; }
 }
 
 // ======================================================
-// Robust Create Respondent (tries canonical payloads & logs debug info)
+// CREATE RESPONDENT (Dashboard / IntegratedPanelService)
+// POST https://ip.surveyrouter.com/IntegratedPanelService/api/Respondent
 // ======================================================
 router.post("/create-respondent", async (req, res) => {
   const autoCulture = await detectCulture(req);
-  const culture = (req.body.culture || autoCulture).toUpperCase();
-
+  const culture = (req.body.culture || autoCulture || "EN-NG").toUpperCase();
   const { guid, country, language } = getCultureData(culture);
-  const { Gender = "M", BirthDate = "1995-01-01" } = req.body;
 
-  // Create deterministic-ish member code if you want persistence; here we generate
-  const MemberCode = `DT-${Date.now()}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  const MemberCode = req.body.MemberCode || `DT-${Date.now()}-${Math.floor(Math.random() * 90000)}`;
 
-  // Two payload shapes commonly seen in partner examples
-  const payloads = [
-    {
-      PartnerGUID: guid,
-      MemberCode,
-      CountryISO2: country,
-      LanguageISO2: language,
-      Gender,
-      BirthDate,
-      isTesting: false,
-      EndPageUrls: END_PAGE_URLS,
-      NotificationUrls: NOTIFICATION_URLS,
-    },
-    {
-      partnerGuid: guid,
-      memberCode: MemberCode,
-      countryISO2: country,
-      languageISO2: language,
-      gender: Gender,
-      birthDate: BirthDate,
-      isTesting: false,
-      endPageUrls: END_PAGE_URLS,
-      notificationUrls: NOTIFICATION_URLS,
-    },
-  ];
+  // Build payload following Dashboard API expected keys (PartnerGuid capitalization varies; use PartnerGuid)
+  const payload = {
+    PartnerGuid: guid,
+    MemberCode,
+    CountryISO2: country,
+    LanguageISO2: language,
+    Gender: req.body.Gender || "M",
+    BirthDate: req.body.BirthDate || "1995-01-01",
+    EndPageUrls: END_PAGE_URLS,
+    NotificationUrls: NOTIFICATION_URLS,
+    // include any optional profile fields passed from frontend (only include safe keys)
+  };
 
-  const attempts = [];
+  const endpoint = `${IP_CORE_URL}/Respondent`;
+  try {
+    console.log("Toluna create-respondent ->", { endpoint, MemberCode, culture });
 
-  // single canonical endpoint to call (ExternalSample/Respondent)
-const endpoint = `${TOLUNA_BASE}/api/externalsample/respondent`;
+    const r = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json, text/plain, */*",
+        "User-Agent": "DailyTasks/1.0",
+      },
+      body: JSON.stringify(payload),
+    });
 
-  for (const payload of payloads) {
-    try {
-      console.log("Attempting Toluna Respondent create:", { endpoint, culture, samplePayloadKeys: Object.keys(payload).slice(0, 6) });
+    const parsed = await safeParseTextResponse(r);
 
-      const r = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json, text/plain, */*",
-          "User-Agent": "DailyTasks-Toluna-Integration/1.0",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const rawText = await r.text();
-      let parsed;
-      try {
-        parsed = JSON.parse(rawText);
-      } catch {
-        parsed = rawText;
-      }
-
-      const attempt = {
-        endpoint,
-        status: r.status,
-        ok: r.ok,
-        headers: (() => {
-          const h = {};
-          r.headers.forEach((v, k) => (h[k] = v));
-          return h;
-        })(),
-        body: parsed,
-        sentPayloadPreview: JSON.stringify(payload).slice(0, 1000),
-      };
-
-      attempts.push(attempt);
-      console.log("Toluna response attempt:", attempt);
-
-      // Success / already exists cases:
-      if (r.ok) {
-        // Toluna may not echo the MemberCode; use the created one as fallback
-        const returnedMember =
-          (parsed && (parsed.MemberCode || parsed.memberCode || parsed.MemberID || parsed.Member)) ||
-          MemberCode;
-
-        console.log("Respondent created successfully:", returnedMember);
-        return res.json({ success: true, memberCode: returnedMember, debugAttempts: attempts });
-      }
-
-      if (typeof parsed === "string" && parsed.toLowerCase().includes("already exists")) {
-        console.log("Toluna says already exists; accepting MemberCode:", MemberCode);
-        return res.json({ success: true, memberCode: MemberCode, debugAttempts: attempts });
-      }
-
-      // otherwise, try the next payload
-    } catch (err) {
-      console.error("Network/exception when calling Toluna:", err && err.message);
-      attempts.push({ endpoint, error: err && err.message });
+    console.log("Toluna create response status:", r.status);
+    if (!r.ok) {
+      console.error("Toluna create-respondent failed:", parsed);
+      return res.status(400).json({ success: false, message: "Toluna create respondent error", detail: parsed });
     }
-  }
 
-  // nothing succeeded
-  console.error("All create-respondent attempts failed. Attempts:", attempts);
-  return res.status(502).json({
-    success: false,
-    message:
-      "Failed to create Toluna respondent. See debugAttempts for full details. If this persists, copy debugAttempts to Toluna support.",
-    debugAttempts: attempts,
-  });
+    // Toluna may return MemberCode or RespondentID - return both if available
+    const returnedMemberCode = (parsed && (parsed.MemberCode || parsed.memberCode || parsed.MemberID)) || MemberCode;
+    console.log("Toluna respondent created:", returnedMemberCode);
+
+    // Return to frontend (you can store returnedMemberCode in localStorage there)
+    return res.json({ success: true, memberCode: returnedMemberCode, raw: parsed });
+  } catch (err) {
+    console.error("create-respondent exception:", err && err.message);
+    return res.status(500).json({ success: false, message: "Server error", error: err && err.message });
+  }
 });
 
 // ======================================================
-// GET SURVEYS
+// UPDATE RESPONDENT (PUT same endpoint)
+// PUT https://ip.surveyrouter.com/IntegratedPanelService/api/Respondent
+// ======================================================
+router.put("/update-respondent", async (req, res) => {
+  const body = req.body;
+  if (!body || (!body.MemberCode && !body.memberCode && !body.MemberID)) {
+    return res.status(400).json({ success: false, message: "Missing MemberCode in request body" });
+  }
+
+  const endpoint = `${IP_CORE_URL}/Respondent`;
+  try {
+    console.log("Toluna update-respondent ->", { endpoint, sampleKeys: Object.keys(body).slice(0,6) });
+
+    const r = await fetch(endpoint, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json, text/plain, */*",
+        "User-Agent": "DailyTasks/1.0",
+      },
+      body: JSON.stringify(body),
+    });
+
+    const parsed = await safeParseTextResponse(r);
+    if (!r.ok) {
+      console.error("Toluna update-respondent failed:", parsed);
+      return res.status(400).json({ success: false, message: "Toluna update error", detail: parsed });
+    }
+
+    return res.json({ success: true, raw: parsed });
+  } catch (err) {
+    console.error("update-respondent exception:", err && err.message);
+    return res.status(500).json({ success: false, message: "Server error", error: err && err.message });
+  }
+});
+
+// ======================================================
+// GET SURVEYS (Survey Router) - Dashboard API
+// GET https://ip.surveyrouter.com/IntegratedPanelService/api/Surveys/?memberCode=...&partnerGuid=...&...
 // ======================================================
 router.get("/get-surveys/:memberCode/:culture", async (req, res) => {
   const { memberCode, culture } = req.params;
+  if (!memberCode) return res.status(400).json({ success: false, message: "memberCode required" });
+
   const chosenCulture = (culture || "EN-NG").toUpperCase();
   const { guid } = getCultureData(chosenCulture);
 
-  const url = `${TOLUNA_BASE}/Surveys?memberCode=${encodeURIComponent(
-    memberCode
-  )}&partnerGuid=${guid}&numberOfSurveys=10&mobileCompatible=true&deviceTypeIDs=1&deviceTypeIDs=2`;
+  const url = `${IP_CORE_URL}/Surveys/?memberCode=${encodeURIComponent(memberCode)}&partnerGuid=${encodeURIComponent(guid)}&numberOfSurveys=10&mobileCompatible=true&deviceTypeIDs=1&deviceTypeIDs=2`;
 
   try {
-    console.log("Fetching Toluna surveys:", url);
-    const response = await fetch(url, {
+    console.log("Fetching Toluna surveys ->", url);
+    const r = await fetch(url, {
       headers: { Accept: "application/json, text/plain, */*" },
     });
-    const text = await response.text();
 
-    if (!response.ok) {
-      console.error("Survey fetch error:", response.status, text);
-      return res.status(response.status).json({ success: false, message: text });
+    const text = await r.text();
+    if (!r.ok) {
+      console.error("Toluna surveys fetch failed:", r.status, text);
+      return res.status(r.status).json({ success: false, message: "Toluna survey fetch error", detail: text });
     }
 
     let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = [];
-    }
+    try { data = JSON.parse(text); } catch { data = text; }
 
+    // Normalize to the shape dashboard expects
     const normalized = Array.isArray(data)
       ? data.map((s) => ({
-          SurveyName: s.SurveyName || s.Title || "Toluna Survey",
-          SurveyURL: s.SurveyURL || s.Url || s.UrlToSurvey || "#",
-          EstimatedLength: s.EstimatedLength || s.EstimatedLOI || "N/A",
+          SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
+          SurveyURL: s.SurveyURL || s.Url || s.UrlToSurvey || s.RedirectURL || "#",
+          EstimatedLength: s.EstimatedLength || s.EstimatedLOI || s.LengthOfInterview || "N/A",
           CPI: s.CPI || s.Incentive || 0,
         }))
       : [];
 
-    res.json({ success: true, data: normalized });
+    return res.json({ success: true, data: normalized, raw: data });
   } catch (err) {
-    console.error("Toluna get-surveys exception:", err && err.message);
-    res.status(500).json({ success: false, message: "Server error" });
+    console.error("get-surveys exception:", err && err.message);
+    return res.status(500).json({ success: false, message: "Server error", error: err && err.message });
   }
 });
 
 // ======================================================
-// CALLBACK HANDLERS (PRODUCTION)
+// CALLBACK HANDLERS
+// Toluna will POST to these. Keep them simple & return 200 quickly.
 // ======================================================
 function calculatePoints(cpi) {
-  const numeric = parseFloat(cpi || 0);
+  const numeric = parseFloat(cpi || 0) || 0;
   return Math.round(numeric * 25);
 }
 
 router.post("/completed", async (req, res) => {
-  const { MemberCode, CPI } = req.body;
+  console.log("Toluna COMPLETED callback:", req.body);
+  const MemberCode = req.body.MemberCode || req.body.memberCode;
+  const CPI = req.body.CPI || req.body.cpi || req.body.Incentive;
   const points = calculatePoints(CPI);
 
-  console.log(`🎉 COMPLETED → ${MemberCode} | CPI=$${CPI} | Points=${points}`);
+  // TODO: persist to DB: update user's points using MemberCode -> your mapping
+  // await User.updateOne({ memberCode: MemberCode }, { $inc: { points } });
 
-  // TODO: persist to DB, e.g. await User.updateOne({ memberCode: MemberCode }, { $inc: { points } });
-
-  res.json({ success: true });
+  return res.json({ success: true });
 });
 
 router.post("/terminated", async (req, res) => {
-  console.log("⚠️ TERMINATED →", req.body);
-  res.json({ success: true });
+  console.log("Toluna TERMINATED callback:", req.body);
+  return res.json({ success: true });
 });
 
 router.post("/survey", async (req, res) => {
-  console.log("📩 SURVEY NOTIFICATION →", req.body);
-  res.json({ success: true });
+  console.log("Toluna SURVEY callback:", req.body);
+  return res.json({ success: true });
 });
 
 router.post("/quota", async (req, res) => {
-  console.log("🚫 QUOTA FULL →", req.body);
-  res.json({ success: true });
+  console.log("Toluna QUOTA callback:", req.body);
+  return res.json({ success: true });
 });
 
 module.exports = router;
