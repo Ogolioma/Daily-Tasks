@@ -199,15 +199,15 @@ router.get("/get-surveys/:memberCode/:culture", async (req, res) => {
     let data;
     try { data = JSON.parse(text); } catch { data = text; }
 
-    // Normalize to the shape dashboard expects
-    const normalized = Array.isArray(data)
-      ? data.map((s) => ({
-          SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
-          SurveyURL: s.SurveyURL || s.Url || s.UrlToSurvey || s.RedirectURL || "#",
-          EstimatedLength: s.EstimatedLength || s.EstimatedLOI || s.LengthOfInterview || "N/A",
-          CPI: s.CPI || s.Incentive || 0,
-        }))
-      : [];
+    // Normalize to dashboard shape
+const normalized = Array.isArray(data)
+  ? data.map((s) => ({
+      SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
+      SurveyURL: s.Link || "#", // Toluna uses ONLY s.Link
+      EstimatedLength: s.EstimatedLength || s.EstimatedLOI || s.LengthOfInterview || "N/A",
+      CPI: s.CPI || s.Incentive || 0,
+    }))
+  : [];
 
     return res.json({ success: true, data: normalized, raw: data });
   } catch (err) {
