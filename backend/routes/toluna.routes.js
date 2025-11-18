@@ -62,11 +62,11 @@ async function detectCulture(req) {
       case "KE": return "EN-KE";
       case "ZA": return "EN-ZA";
       case "US": return "EN-US";
-      default: return "EN-NG";
+      default: return "EN-US";
     }
   } catch (e) {
     console.warn("detectCulture failed:", e && e.message);
-    return "EN-NG";
+    return "EN-US";
   }
 }
 
