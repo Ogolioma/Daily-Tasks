@@ -174,7 +174,7 @@ router.put("/update-respondent", async (req, res) => {
 // ======================================================
 // GET SURVEYS (Survey Router)
 // ======================================================
-router.get("/get-surveys/:memberCode/:culture?", async (req, res) => {
+router.get("/get-surveys/:memberCode/:culture", async (req, res) => {
   const { memberCode, culture } = req.params;
   if (!memberCode) {
     return res.status(400).json({ success: false, message: "memberCode required" });
