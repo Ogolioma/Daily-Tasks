@@ -19,16 +19,16 @@ const CULTURE_GUIDS = {
 
 // End pages (keep exact urls you provided)
 const END_PAGE_URLS = {
-  FraudTerminate: "https://dailytasks.co/surveys/fraud?",
-  MaxSurveysReached: "https://dailytasks.co/surveys/max-reached?",
-  NoCookies: "https://dailytasks.co/surveys/no-cookies?",
-  NoSurveys: "https://dailytasks.co/surveys/no-surveys?",
-  NotQualified: "https://dailytasks.co/surveys/not-qualified?",
-  Qualified: "https://dailytasks.co/surveys/qualified?",
+  FraudTerminate: "https://dailytasks.co/surveys/fraud.html?",
+  MaxSurveysReached: "https://dailytasks.co/surveys/max-reached.html?",
+  NoCookies: "https://dailytasks.co/surveys/no-cookies.html?",
+  NoSurveys: "https://dailytasks.co/surveys/no-surveys.html?",
+  NotQualified: "https://dailytasks.co/surveys/not-qualified.html?",
+  Qualified: "https://dailytasks.co/surveys/qualified.html?",
   QuotaFull: "https://dailytasks.co/surveys/quota-full?",
-  SurveyNotAvailable: "https://dailytasks.co/surveys/unavailable?",
-  SurveyTaken: "https://dailytasks.co/surveys/already-taken?",
-  Terminated: "https://dailytasks.co/surveys/terminated?",
+  SurveyNotAvailable: "https://dailytasks.co/surveys/unavailable.html?",
+  SurveyTaken: "https://dailytasks.co/surveys/already-taken.html?",
+  Terminated: "https://dailytasks.co/surveys/terminated.html?",
 };
 
 // Notification URLs (kept exactly as you asked)
