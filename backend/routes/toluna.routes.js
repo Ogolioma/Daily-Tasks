@@ -52,30 +52,27 @@ function getCultureData(culture = "EN-NG") {
 
 async function detectCulture(req) {
   try {
-    // Render, Cloudflare, Netlify, Vercel real IP logic
+    // Works on Render, Netlify, Vercel, Cloudflare, Nginx
     const forwarded = req.headers["x-forwarded-for"];
     const ip =
       req.headers["x-real-ip"] ||
       req.headers["cf-connecting-ip"] ||
-      (forwarded ? forwarded.split(",").pop().trim() : null) ||
+      (forwarded ? forwarded.split(",").shift().trim() : null) ||
       req.socket.remoteAddress ||
       "8.8.8.8";
 
-    // Debug
     console.log("📌 DETECTED IP:", ip);
 
-    const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
-    const raw = await geoRes.text();
+    // 🔥 SWITCHED TO ipwho.is → always JSON, never rate-limited
+    const geoRes = await fetch(`https://ipwho.is/${ip}`);
+    const geo = await geoRes.json();
 
-    let geo;
-    try {
-      geo = JSON.parse(raw);
-    } catch {
-      console.warn("Invalid JSON from ipapi:", raw);
-      return "EN-US"; // fallback
-    }
+    console.log("📌 GEO:", geo);
 
     const cc = geo.country_code?.toUpperCase();
+    console.log("📌 COUNTRY CODE:", cc);
+
+    if (!cc) return "EN-US";
 
     switch (cc) {
       case "NG": return "EN-NG";
