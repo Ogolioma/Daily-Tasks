@@ -52,10 +52,31 @@ function getCultureData(culture = "EN-NG") {
 
 async function detectCulture(req) {
   try {
-    const ip = (req.headers["x-forwarded-for"] || "").split(",")[0] || req.socket.remoteAddress || "8.8.8.8";
+    // Render, Cloudflare, Netlify, Vercel real IP logic
+    const forwarded = req.headers["x-forwarded-for"];
+    const ip =
+      req.headers["x-real-ip"] ||
+      req.headers["cf-connecting-ip"] ||
+      (forwarded ? forwarded.split(",").pop().trim() : null) ||
+      req.socket.remoteAddress ||
+      "8.8.8.8";
+
+    // Debug
+    console.log("📌 DETECTED IP:", ip);
+
     const geoRes = await fetch(`https://ipapi.co/${ip}/json/`);
-    const geo = await geoRes.json();
-    const cc = (geo && geo.country_code) ? geo.country_code.toUpperCase() : null;
+    const raw = await geoRes.text();
+
+    let geo;
+    try {
+      geo = JSON.parse(raw);
+    } catch {
+      console.warn("Invalid JSON from ipapi:", raw);
+      return "EN-US"; // fallback
+    }
+
+    const cc = geo.country_code?.toUpperCase();
+
     switch (cc) {
       case "NG": return "EN-NG";
       case "IN": return "EN-IN";
@@ -65,7 +86,7 @@ async function detectCulture(req) {
       default: return "EN-US";
     }
   } catch (e) {
-    console.warn("detectCulture failed:", e && e.message);
+    console.warn("detectCulture failed:", e.message);
     return "EN-US";
   }
 }
