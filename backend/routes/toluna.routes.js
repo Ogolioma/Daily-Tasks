@@ -198,8 +198,14 @@ router.get("/get-surveys/:memberCode/:culture", async (req, res) => {
     return res.status(400).json({ success: false, message: "memberCode required" });
   }
 
-  const chosenCulture = (culture || "EN-NG").toUpperCase();
-  const { guid } = getCultureData(chosenCulture);
+  let chosenCulture = (culture || "").toUpperCase();
+
+// If frontend sent "auto", detect on backend
+if (chosenCulture === "AUTO") {
+  chosenCulture = await detectCulture(req);
+}
+
+const { guid } = getCultureData(chosenCulture);
 
   const url = `${IP_CORE_URL}/Surveys/?memberCode=${encodeURIComponent(memberCode)}&partnerGuid=${encodeURIComponent(guid)}&numberOfSurveys=10&mobileCompatible=true&deviceTypeIDs=1&deviceTypeIDs=2`;
 
