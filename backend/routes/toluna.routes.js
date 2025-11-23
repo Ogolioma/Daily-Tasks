@@ -250,7 +250,7 @@ router.put("/update-respondent", auth, async (req, res) => {
 // GET /get-surveys/:memberCode/:culture
 // GET /get-surveys/me/auto -> uses authenticated user's saved tolunaMemberCode
 // ======================================================
-router.get("/get-surveys/:memberCode/:culture?", auth, async (req, res) => {
+router.get("/get-surveys/:memberCode/:culture", auth, async (req, res) => {
   const { memberCode: memberCodeParam, culture } = req.params;
   const User = requireUserModel();
   const userId = getAuthUserId(req);
