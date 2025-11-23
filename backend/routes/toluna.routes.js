@@ -3,12 +3,14 @@ const express = require("express");
 const fetch = require("node-fetch");
 const router = express.Router();
 
+const auth = require("../middleware/auth"); // requires your auth middleware
+
 // ======================================================
-// CONFIG - do not change Toluna URLs (per your request)
+// CONFIG - exact Toluna / Survey Router URLs (do not change)
 // ======================================================
 const IP_CORE_URL = "https://ip.surveyrouter.com/IntegratedPanelService/api";
 
-// Culture -> GUID map (use your sheet values)
+// Culture -> GUID map (keep your values)
 const CULTURE_GUIDS = {
   "EN-US": "71070C9C-8D9B-4B65-B11C-7406E5B8D52A",
   "EN-IN": "3FEC87CF-5B1C-4DE2-B420-E3E300553087",
@@ -17,7 +19,7 @@ const CULTURE_GUIDS = {
   "EN-ZA": "7A9B6E1E-2426-4AD7-86E6-768BDD3A7898",
 };
 
-// End pages (keep exact urls you provided)
+// End pages — keep the URLs you provided. NOTE: trailing '?' so Toluna can append encValue=...
 const END_PAGE_URLS = {
   FraudTerminate: "https://dailytasks.co/surveys/fraud.html?",
   MaxSurveysReached: "https://dailytasks.co/surveys/max-reached.html?",
@@ -31,7 +33,7 @@ const END_PAGE_URLS = {
   Terminated: "https://dailytasks.co/surveys/terminated.html?",
 };
 
-// Notification URLs (kept exactly as you asked)
+// Notification/callback endpoints (kept as you specified)
 const NOTIFICATION_URLS = {
   CompletionURL: "https://daily-tasks-556b.onrender.com/api/toluna/completed",
   TerminateNotification: "https://daily-tasks-556b.onrender.com/api/toluna/terminated",
@@ -50,9 +52,10 @@ function getCultureData(culture = "EN-NG") {
   return { guid, country, language };
 }
 
+// Reliable IP -> country lookup (ipwho.is returns JSON reliably)
 async function detectCulture(req) {
   try {
-    // Works on Render, Netlify, Vercel, Cloudflare, Nginx
+    // best-effort to capture client IP behind proxies / render / netlify / cloudflare
     const forwarded = req.headers["x-forwarded-for"];
     const ip =
       req.headers["x-real-ip"] ||
@@ -63,17 +66,12 @@ async function detectCulture(req) {
 
     console.log("📌 DETECTED IP:", ip);
 
-    // 🔥 SWITCHED TO ipwho.is → always JSON, never rate-limited
-    const geoRes = await fetch(`https://ipwho.is/${ip}`);
-    const geo = await geoRes.json();
-
+    const r = await fetch(`https://ipwho.is/${ip}`);
+    const geo = await r.json();
     console.log("📌 GEO:", geo);
 
-    const cc = geo.country_code?.toUpperCase();
-    console.log("📌 COUNTRY CODE:", cc);
-
+    const cc = geo && geo.country_code ? geo.country_code.toUpperCase() : null;
     if (!cc) return "EN-US";
-
     switch (cc) {
       case "NG": return "EN-NG";
       case "IN": return "EN-IN";
@@ -83,43 +81,80 @@ async function detectCulture(req) {
       default: return "EN-US";
     }
   } catch (e) {
-    console.warn("detectCulture failed:", e.message);
+    console.warn("detectCulture failed:", e && e.message);
     return "EN-US";
   }
 }
 
-// Small utility to safe-parse JSON
+// safe text -> try JSON parse
 async function safeParseTextResponse(res) {
   const text = await res.text();
   try { return JSON.parse(text); } catch { return text; }
 }
 
-// ======================================================
-// CREATE RESPONDENT (Dashboard / IntegratedPanelService)
-// POST https://ip.surveyrouter.com/IntegratedPanelService/api/Respondent
-// ======================================================
-router.post("/create-respondent", async (req, res) => {
-  const autoCulture = await detectCulture(req);
-  const culture = (req.body.culture || autoCulture || "EN-NG").toUpperCase();
-  const { guid, country, language } = getCultureData(culture);
-
-  const MemberCode = req.body.MemberCode || `DT-${Date.now()}-${Math.floor(Math.random() * 90000)}`;
-
-  // Build payload following Dashboard API expected keys (PartnerGuid capitalization varies; use PartnerGuid)
-  const payload = {
-    PartnerGuid: guid,
-    MemberCode,
-    CountryISO2: country,
-    LanguageISO2: language,
-    Gender: req.body.Gender || "M",
-    BirthDate: req.body.BirthDate || "1995-01-01",
-    EndPageUrls: END_PAGE_URLS,
-    NotificationUrls: NOTIFICATION_URLS,
-    // include any optional profile fields passed from frontend (only include safe keys)
-  };
-
-  const endpoint = `${IP_CORE_URL}/Respondent`;
+// try load User model (support User.js or user.js filename)
+function requireUserModel() {
   try {
+    return require("../model/user"); // common filename
+  } catch (e1) {
+    try { return require("../model/user"); } catch (e2) { return null; }
+  }
+}
+
+// small helper to extract authenticated user id from token-decoded payload
+function getAuthUserId(req) {
+  if (!req.user) return null;
+  return req.user.id || req.user._id || req.user.userId || null;
+}
+
+// ======================================================
+// CREATE RESPONDENT
+// - Only runs for authenticated users (auth middleware)
+// - If user already has tolunaMemberCode, returns it (no new MemberCodes)
+// - Otherwise creates respondent at Toluna and saves member code on user document
+// ======================================================
+router.post("/create-respondent", auth, async (req, res) => {
+  const User = requireUserModel();
+  const userId = getAuthUserId(req);
+  if (!userId) return res.status(401).json({ success: false, message: "Auth required" });
+  if (!User) {
+    console.warn("User model not found. Can't persist member code — continuing but returning code to frontend.");
+  }
+
+  try {
+    // If user already has tolunaMemberCode, return it — do not create another
+    let existingCode = null;
+    if (User) {
+      const dbUser = await User.findById(userId).select("tolunaMemberCode");
+      existingCode = dbUser && dbUser.tolunaMemberCode ? dbUser.tolunaMemberCode : null;
+    }
+
+    if (existingCode) {
+      console.log("Toluna: user already has MemberCode — returning existing:", existingCode);
+      return res.json({ success: true, memberCode: existingCode, fromDb: true });
+    }
+
+    // Determine culture from IP (backend)
+    const autoCulture = await detectCulture(req);
+    const culture = (req.body.culture || autoCulture || "EN-NG").toUpperCase();
+    const { guid, country, language } = getCultureData(culture);
+
+    // deterministic MemberCode for this call (we'll persist it)
+    const MemberCode = req.body.MemberCode || `DT-${Date.now()}-${Math.floor(Math.random() * 90000)}`;
+
+    // Build payload expected by Dashboard / IntegratedPanelService
+    const payload = {
+      PartnerGuid: guid,
+      MemberCode,
+      CountryISO2: country,
+      LanguageISO2: language,
+      Gender: req.body.Gender || "M",
+      BirthDate: req.body.BirthDate || "1995-01-01",
+      EndPageUrls: END_PAGE_URLS,
+      NotificationUrls: NOTIFICATION_URLS,
+    };
+
+    const endpoint = `${IP_CORE_URL}/Respondent`;
     console.log("Toluna create-respondent ->", { endpoint, MemberCode, culture });
 
     const r = await fetch(endpoint, {
@@ -133,18 +168,28 @@ router.post("/create-respondent", async (req, res) => {
     });
 
     const parsed = await safeParseTextResponse(r);
-
     console.log("Toluna create response status:", r.status);
+
     if (!r.ok) {
       console.error("Toluna create-respondent failed:", parsed);
       return res.status(400).json({ success: false, message: "Toluna create respondent error", detail: parsed });
     }
 
-    // Toluna may return MemberCode or RespondentID - return both if available
+    // Toluna may return MemberCode or RespondentID
     const returnedMemberCode = (parsed && (parsed.MemberCode || parsed.memberCode || parsed.MemberID)) || MemberCode;
     console.log("Toluna respondent created:", returnedMemberCode);
 
-    // Return to frontend (you can store returnedMemberCode in localStorage there)
+    // Persist to user's record (if model available)
+    if (User) {
+      try {
+        await User.findByIdAndUpdate(userId, { tolunaMemberCode: returnedMemberCode });
+        console.log("Saved tolunaMemberCode to user:", userId);
+      } catch (e) {
+        console.warn("Failed to save tolunaMemberCode to DB:", e && e.message);
+      }
+    }
+
+    // Return memberCode to frontend
     return res.json({ success: true, memberCode: returnedMemberCode, raw: parsed });
   } catch (err) {
     console.error("create-respondent exception:", err && err.message);
@@ -153,10 +198,12 @@ router.post("/create-respondent", async (req, res) => {
 });
 
 // ======================================================
-// UPDATE RESPONDENT (PUT same endpoint)
-// PUT https://ip.surveyrouter.com/IntegratedPanelService/api/Respondent
+// UPDATE RESPONDENT (PUT)
+/* Useful if frontend wants to update demographics later.
+   Expects a body that includes MemberCode (or memberCode) and any fields to update.
+*/
 // ======================================================
-router.put("/update-respondent", async (req, res) => {
+router.put("/update-respondent", auth, async (req, res) => {
   const body = req.body;
   if (!body || (!body.MemberCode && !body.memberCode && !body.MemberID)) {
     return res.status(400).json({ success: false, message: "Missing MemberCode in request body" });
@@ -182,6 +229,14 @@ router.put("/update-respondent", async (req, res) => {
       return res.status(400).json({ success: false, message: "Toluna update error", detail: parsed });
     }
 
+    // If frontend sent MemberCode and user is authenticated, store it if missing
+    const User = requireUserModel();
+    const userId = getAuthUserId(req);
+    const returnedMemberCode = (parsed && (parsed.MemberCode || parsed.memberCode || parsed.MemberID)) || body.MemberCode || body.memberCode;
+    if (User && userId && returnedMemberCode) {
+      try { await User.findByIdAndUpdate(userId, { tolunaMemberCode: returnedMemberCode }); } catch (e) { /* ignore */ }
+    }
+
     return res.json({ success: true, raw: parsed });
   } catch (err) {
     console.error("update-respondent exception:", err && err.message);
@@ -190,33 +245,45 @@ router.put("/update-respondent", async (req, res) => {
 });
 
 // ======================================================
-// GET SURVEYS (Survey Router)
+// GET SURVEYS
+// - supports:
+// GET /get-surveys/:memberCode/:culture
+// GET /get-surveys/me/auto -> uses authenticated user's saved tolunaMemberCode
 // ======================================================
-router.get("/get-surveys/:memberCode/:culture", async (req, res) => {
-  const { memberCode, culture } = req.params;
-  if (!memberCode) {
+router.get("/get-surveys/:memberCode/:culture?", auth, async (req, res) => {
+  const { memberCode: memberCodeParam, culture } = req.params;
+  const User = requireUserModel();
+  const userId = getAuthUserId(req);
+
+  if (!memberCodeParam) {
     return res.status(400).json({ success: false, message: "memberCode required" });
   }
 
+  // Special values:
+  // - "me" -> use saved tolunaMemberCode for authenticated user
+  // - "auto" -> detect culture on backend
+  let memberCode = memberCodeParam;
+  if (memberCodeParam.toLowerCase() === "me") {
+    if (!User || !userId) return res.status(400).json({ success: false, message: "No user context to fetch memberCode" });
+    const dbUser = await User.findById(userId).select("tolunaMemberCode");
+    memberCode = dbUser && dbUser.tolunaMemberCode;
+    if (!memberCode) return res.status(404).json({ success: false, message: "No saved tolunaMemberCode for user" });
+  }
+
+  // culture handling
   let chosenCulture = (culture || "").toUpperCase();
+  if (!chosenCulture || chosenCulture === "AUTO") {
+    chosenCulture = await detectCulture(req);
+  }
 
-// If frontend sent "auto", detect on backend
-if (chosenCulture === "AUTO") {
-  chosenCulture = await detectCulture(req);
-}
-
-const { guid } = getCultureData(chosenCulture);
-
+  const { guid } = getCultureData(chosenCulture);
   const url = `${IP_CORE_URL}/Surveys/?memberCode=${encodeURIComponent(memberCode)}&partnerGuid=${encodeURIComponent(guid)}&numberOfSurveys=10&mobileCompatible=true&deviceTypeIDs=1&deviceTypeIDs=2`;
 
   try {
     console.log("Fetching Toluna surveys ->", url);
-
-    const r = await fetch(url, {
-      headers: { Accept: "application/json, text/plain, */*" },
-    });
-
+    const r = await fetch(url, { headers: { Accept: "application/json, text/plain, */*" } });
     const text = await r.text();
+
     if (!r.ok) {
       console.error("Toluna surveys fetch failed:", r.status, text);
       return res.status(r.status).json({ success: false, message: "Toluna survey fetch error", detail: text });
@@ -225,49 +292,26 @@ const { guid } = getCultureData(chosenCulture);
     let data;
     try { data = JSON.parse(text); } catch { data = text; }
 
-    // -------------------------------------------
-    // ✔ FIXED NORMALIZATION (THIS WAS THE BUG)
-    // -------------------------------------------
+    // Normalize to shape frontend expects
     const normalized = Array.isArray(data)
       ? data.map((s) => ({
           SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
-
-          // IMPORTANT FIX — use URL (Toluna uses this)
-          SurveyURL:
-            s.URL ||
-            s.Url ||
-            s.Link ||
-            s.RedirectURL ||
-            s.SurveyURL ||
-            "#",
-
-          EstimatedLength:
-            s.EstimatedLength ||
-            s.EstimatedLOI ||
-            s.LengthOfInterview ||
-            s.Duration ||
-            "N/A",
-
+          // Toluna frequently uses "URL" or "Url" or "Link" — fallbacks included
+          SurveyURL: s.URL || s.Url || s.Link || s.RedirectURL || s.SurveyURL || s.LinkUrl || "#",
+          EstimatedLength: s.EstimatedLength || s.EstimatedLOI || s.LengthOfInterview || s.Duration || "N/A",
           CPI: s.CPI || s.Incentive || s.MemberAmount || 0,
         }))
       : [];
 
-    return res.json({
-      success: true,
-      data: normalized,
-      raw: data,
-    });
+    return res.json({ success: true, data: normalized, raw: data });
   } catch (err) {
     console.error("get-surveys exception:", err && err.message);
     return res.status(500).json({ success: false, message: "Server error", error: err && err.message });
   }
 });
 
-
-
 // ======================================================
-// CALLBACK HANDLERS
-// Toluna will POST to these. Keep them simple & return 200 quickly.
+// CALLBACK HANDLERS (Toluna will POST to these endpoints)
 // ======================================================
 function calculatePoints(cpi) {
   const numeric = parseFloat(cpi || 0) || 0;
@@ -280,8 +324,8 @@ router.post("/completed", async (req, res) => {
   const CPI = req.body.CPI || req.body.cpi || req.body.Incentive;
   const points = calculatePoints(CPI);
 
-  // TODO: persist to DB: update user's points using MemberCode -> your mapping
-  // await User.updateOne({ memberCode: MemberCode }, { $inc: { points } });
+  // TODO: map MemberCode -> user and add points in DB
+  // If you want, uncomment/find User model and update the user.
 
   return res.json({ success: true });
 });

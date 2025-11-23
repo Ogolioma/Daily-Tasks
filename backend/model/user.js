@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema({
   gender: { type: String, enum: ["Male", "Female"], required: true },
   dob: { type: Date, required: true },
 
+  //Toluna Info
+  tolunaMemberCode: { type: String, default: null },
+
   // Optional Info
   occupation: String,
   nationality: String,
