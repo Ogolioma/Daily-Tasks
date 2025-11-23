@@ -1,0 +1,10 @@
+/surveys/qualified /surveys/qualified.html 200
+/surveys/terminated /surveys/terminated.html 200
+/surveys/quota-full /surveys/quota-full.html 200
+/surveys/no-surveys /surveys/no-surveys.html 200
+/surveys/fraud /surveys/fraud.html 200
+/surveys/max-reached /surveys/max-reached.html 200
+/surveys/no-cookies /surveys/no-cookies.html 200
+/surveys/not-qualified /surveys/not-qualified.html 200
+/surveys/unavailable /surveys/unavailable.html 200
+/surveys/terminated /surveys/terminated.html 200
