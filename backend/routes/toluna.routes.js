@@ -21,19 +21,19 @@ const CULTURE_GUIDS = {
 
 // End pages — keep the URLs you provided. NOTE: trailing '?' so Toluna can append encValue=...
 const END_PAGE_URLS = {
-  FraudTerminate: "https://dailytasks.co/surveys/fraud",
-  MaxSurveysReached: "https://dailytasks.co/surveys/max-reached",
-  NoCookies: "https://dailytasks.co/surveys/no-cookies",
-  NoSurveys: "https://dailytasks.co/surveys/no-surveys",
-  NotQualified: "https://dailytasks.co/surveys/not-qualified",
-  Qualified: "https://dailytasks.co/surveys/qualified",
-  QuotaFull: "https://dailytasks.co/surveys/quota-full",
-  SurveyNotAvailable: "https://dailytasks.co/surveys/unavailable",
-  SurveyTaken: "https://dailytasks.co/surveys/already-taken",
-  Terminated: "https://dailytasks.co/surveys/terminated",
+  FraudTerminate: "https://dailytasks.co/surveys/fraud?",
+  MaxSurveysReached: "https://dailytasks.co/surveys/max-reached?",
+  NoCookies: "https://dailytasks.co/surveys/no-cookies?",
+  NoSurveys: "https://dailytasks.co/surveys/no-surveys?",
+  NotQualified: "https://dailytasks.co/surveys/not-qualified?",
+  Qualified: "https://dailytasks.co/surveys/qualified?",
+  QuotaFull: "https://dailytasks.co/surveys/quota-full?",
+  SurveyNotAvailable: "https://dailytasks.co/surveys/unavailable?",
+  SurveyTaken: "https://dailytasks.co/surveys/already-taken?",
+  Terminated: "https://dailytasks.co/surveys/terminated>",
 };
 
-// Notification/callback endpoints (kept as you specified)
+// Notification/callback endpoint
 const NOTIFICATION_URLS = {
   CompletionURL: "https://daily-tasks-556b.onrender.com/api/toluna/completed",
   TerminateNotification: "https://daily-tasks-556b.onrender.com/api/toluna/terminated",
@@ -53,25 +53,20 @@ function getCultureData(culture = "EN-NG") {
 }
 
 // Reliable IP -> country lookup (ipwho.is returns JSON reliably)
+// ======================================================
+// NEW detectCulture() — NO paid APIs, no limits, fully automatic
+// ======================================================
 async function detectCulture(req) {
   try {
-    // best-effort to capture client IP behind proxies / render / netlify / cloudflare
-    const forwarded = req.headers["x-forwarded-for"];
-    const ip =
-      req.headers["x-real-ip"] ||
-      req.headers["cf-connecting-ip"] ||
-      (forwarded ? forwarded.split(",").shift().trim() : null) ||
-      req.socket.remoteAddress ||
-      "8.8.8.8";
+    // Render assigns X-Country-Code
+    // Netlify/Cloudflare assign CF-IPCountry
+    const countryHeader =
+      req.headers["x-country-code"] ||
+      req.headers["cf-ipcountry"] ||
+      "NG"; // fallback default
 
-    console.log("📌 DETECTED IP:", ip);
+    const cc = countryHeader.toUpperCase();
 
-    const r = await fetch(`https://ipwho.is/${ip}`);
-    const geo = await r.json();
-    console.log("📌 GEO:", geo);
-
-    const cc = geo && geo.country_code ? geo.country_code.toUpperCase() : null;
-    if (!cc) return "EN-US";
     switch (cc) {
       case "NG": return "EN-NG";
       case "IN": return "EN-IN";
@@ -81,8 +76,8 @@ async function detectCulture(req) {
       default: return "EN-US";
     }
   } catch (e) {
-    console.warn("detectCulture failed:", e && e.message);
-    return "EN-NG";
+    console.log("Failed culture detect:", e.message);
+    return "EN-US";
   }
 }
 
