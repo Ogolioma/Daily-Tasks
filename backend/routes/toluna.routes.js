@@ -138,16 +138,49 @@ router.post("/create-respondent", auth, async (req, res) => {
     const MemberCode = req.body.MemberCode || `DT-${Date.now()}-${Math.floor(Math.random() * 90000)}`;
 
     // Build payload expected by Dashboard / IntegratedPanelService
-    const payload = {
-      PartnerGuid: guid,
-      MemberCode,
-      CountryISO2: country,
-      LanguageISO2: language,
-      Gender: req.body.Gender || "M",
-      BirthDate: req.body.BirthDate || "1995-01-01",
-      EndPageUrls: END_PAGE_URLS,
-      NotificationUrls: NOTIFICATION_URLS,
-    };
+    // Attempt to pick DOB & Gender from DB first, then body, then fallback
+  const User = requireUserModel();
+  let dbUser = null;
+  if (User && userId) {
+    try {
+      dbUser = await User.findById(userId).select("dob gender");
+    } catch (e) {
+      console.warn("Could not load DB user for DOB:", e && e.message);
+    }
+  }
+
+  // prefer explicitly-provided body value, then DB, then fallback
+  let rawDob = (req.body && req.body.BirthDate) ? req.body.BirthDate : (dbUser && dbUser.dob ? dbUser.dob : null);
+  // If rawDob is a Date object or ISO string, normalize to YYYY-MM-DD, otherwise fallback
+  let birthDate = "1970-06-01";
+  if (rawDob) {
+    try {
+      const d = new Date(rawDob);
+      if (!isNaN(d.getTime())) {
+        birthDate = d.toISOString().slice(0, 10); // YYYY-MM-DD
+      } else if (typeof rawDob === "string" && /^\d{4}-\d{2}-\d{2}/.test(rawDob)) {
+        birthDate = rawDob.slice(0, 10);
+      }
+    } catch (e) {
+      // keep fallback
+    }
+  }
+
+  // gender normalization: prefer req.body, then DB, default to "M"
+  const rawGender = (req.body && req.body.Gender) ? req.body.Gender : (dbUser && dbUser.gender ? dbUser.gender : "M");
+  const gender = (typeof rawGender === "string" && rawGender.toLowerCase().startsWith("f")) ? "F" : "M";
+
+  // Build payload expected by Dashboard / IntegratedPanelService
+  const payload = {
+    PartnerGuid: guid,
+    MemberCode,
+    CountryISO2: country,
+    LanguageISO2: language,
+    Gender: gender,
+    BirthDate: birthDate,
+    EndPageUrls: END_PAGE_URLS,
+    NotificationUrls: NOTIFICATION_URLS,
+  };
 
     const endpoint = `${IP_CORE_URL}/Respondent`;
     console.log("Toluna create-respondent ->", { endpoint, MemberCode, culture });
