@@ -4,6 +4,7 @@ const fetch = require("node-fetch");
 const router = express.Router();
 
 const auth = require("../middleware/auth"); // requires your auth middleware
+const User = require("../model/user")
 
 // ======================================================
 // CONFIG - exact Toluna / Survey Router URLs (do not change)
@@ -139,7 +140,6 @@ router.post("/create-respondent", auth, async (req, res) => {
 
     // Build payload expected by Dashboard / IntegratedPanelService
     // Attempt to pick DOB & Gender from DB first, then body, then fallback
-  const User = requireUserModel();
   let dbUser = null;
   if (User && userId) {
     try {
