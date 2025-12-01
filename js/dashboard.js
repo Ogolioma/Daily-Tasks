@@ -194,6 +194,8 @@ async function openTolunaSurvey(userId) {
   const modal = document.getElementById("taskModal");
   const title = document.getElementById("taskTitle");
   const instructions = document.getElementById("taskInstructions");
+  const footer = document.getElementById("taskFooter");
+  if (footer) footer.style.display = "none";
   if (!modal || !title || !instructions) return;
 
   title.textContent = "Toluna Surveys";
@@ -259,6 +261,7 @@ async function openTolunaSurvey(userId) {
         <div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">
           <strong>${s.SurveyName}</strong><br>
           <small>${s.EstimatedLength} mins</small><br>
+          <small>Reward: ${s.CPI} points</small><br>
           <a href="${s.SurveyURL}" target="_blank" style="color:#007bff;">Start Survey</a>
         </div>
       `;
@@ -404,6 +407,8 @@ async function submitTask() {
 
 function closeModal() {
   document.getElementById("taskModal").style.display = "none";
+  const footer = document.getElementById("taskFooter");
+  if (footer) footer.style.display = "none";
 }
 
 async function loadCashoutHistory() {
