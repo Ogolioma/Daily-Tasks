@@ -320,16 +320,44 @@ router.get("/get-surveys/:memberCode/:culture", auth, async (req, res) => {
     let data;
     try { data = JSON.parse(text); } catch { data = text; }
 
-    // Normalize to shape frontend expects
-    const normalized = Array.isArray(data)
-      ? data.map((s) => ({
-          SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
-          // Toluna frequently uses "URL" or "Url" or "Link" — fallbacks included
-          SurveyURL: s.URL || s.Url || s.Link || s.RedirectURL || s.SurveyURL || s.LinkUrl || "#",
-          EstimatedLength: s.EstimatedLength || s.EstimatedLOI || s.LengthOfInterview || s.Duration || "N/A",
-          CPI: s.CPI || s.Incentive || s.MemberAmount || 0,
-        }))
-      : [];
+    // Normalize survey list to format frontend expects
+const normalized = Array.isArray(data)
+  ? data.map((s) => {
+      const partnerAmount =
+        s.PartnerAmount ||
+        s.CPI ||
+        s.Incentive ||
+        s.Reward ||
+        s.Amount ||
+        0;
+
+      return {
+        SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
+
+        SurveyURL:
+          s.URL ||
+          s.Url ||
+          s.Link ||
+          s.RedirectURL ||
+          s.SurveyURL ||
+          s.LinkUrl ||
+          "#",
+
+        EstimatedLength:
+          s.EstimatedLength ||
+          s.EstimatedLOI ||
+          s.LengthOfInterview ||
+          s.Duration ||
+          "N/A",
+
+        // Member CPI is NOT from Toluna. We compute it from PartnerAmount.
+        CPI: partnerAmount,
+
+        // Member points = PartnerAmount * 25
+        Points: Math.round(parseFloat(partnerAmount || 0) * 25),
+      };
+    })
+  : [];
 
     return res.json({ success: true, data: normalized, raw: data });
   } catch (err) {
