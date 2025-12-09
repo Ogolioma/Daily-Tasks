@@ -323,13 +323,18 @@ router.get("/get-surveys/:memberCode/:culture", auth, async (req, res) => {
     // Normalize survey list to format frontend expects
 const normalized = Array.isArray(data)
   ? data.map((s) => {
-      const partnerAmount =
+      // PartnerAmount is ALWAYS the real payout Toluna sends you
+      const partnerAmount = parseFloat(
         s.PartnerAmount ||
         s.CPI ||
         s.Incentive ||
         s.Reward ||
         s.Amount ||
-        0;
+        0
+      ) || 0;
+
+      // Member points = PartnerAmount * 25 (standard rounding)
+      const points = Math.round(partnerAmount * 25);
 
       return {
         SurveyName: s.SurveyName || s.Title || s.Name || "Toluna Survey",
@@ -350,11 +355,11 @@ const normalized = Array.isArray(data)
           s.Duration ||
           "N/A",
 
-        // Member CPI is NOT from Toluna. We compute it from PartnerAmount.
-        CPI: partnerAmount,
+        // CPI shown to member = points
+        CPI: points,
 
-        // Member points = PartnerAmount * 25
-        Points: Math.round(parseFloat(partnerAmount || 0) * 25),
+        // Keep explicit points field too
+        Points: points,
       };
     })
   : [];

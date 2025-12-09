@@ -209,67 +209,70 @@ async function openTolunaSurvey(userId) {
       return;
     }
 
-    // 1️⃣ Create respondent WITH TOKEN
-    const createRes = await fetch(
-      "https://daily-tasks-556b.onrender.com/api/toluna/create-respondent",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // 🔥 THE FIX
-        },
-        body: JSON.stringify({})
-      }
-    );
+    // 1) Create respondent (auth required)
+    const createRes = await fetch("https://daily-tasks-556b.onrender.com/api/toluna/create-respondent", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({})
+    });
 
     const createJson = await createRes.json();
     if (!createJson.success) {
-      instructions.innerHTML = `<p style="color:red">Could not create respondent: ${createJson.message}</p>`;
+      instructions.innerHTML = `<p style="color:red">Could not create respondent: ${createJson.message || JSON.stringify(createJson)}</p>`;
       return;
     }
-
     const memberCode = createJson.memberCode;
     localStorage.setItem("tolunaMemberCode", memberCode);
 
-    // 2️⃣ Fetch surveys WITH TOKEN
+    // 2) Get surveys (auth required)
     const surveysRes = await fetch(
       `https://daily-tasks-556b.onrender.com/api/toluna/get-surveys/${encodeURIComponent(memberCode)}/auto`,
-      {
-        headers: {
-          "Authorization": `Bearer ${token}` // 🔥 ALSO REQUIRED
-        }
-      }
+      { headers: { "Authorization": `Bearer ${token}` } }
     );
 
     const surveysJson = await surveysRes.json();
     if (!surveysJson.success) {
-      instructions.innerHTML = `<p style="color:red">Could not load surveys.</p>`;
+      instructions.innerHTML = `<p style="color:red">Could not load surveys: ${surveysJson.message || JSON.stringify(surveysJson)}</p>`;
       return;
     }
 
     const surveys = Array.isArray(surveysJson.data) ? surveysJson.data : [];
-
     if (!surveys.length) {
       instructions.innerHTML = `<p style="color:#555;text-align:center;">No Toluna surveys available right now.</p>`;
       return;
     }
 
-    // Build UI
-    let html = `<p style="color:#444">Available Surveys:</p>`;
+    // Build a scrollable container so users can see all ten items
+    let html = `
+      <p style="color:#444;margin-bottom:8px;">Available Surveys:</p>
+      <div id="tolunaSurveyList" style="max-height:60vh; overflow-y:auto; padding-right:8px;">
+    `;
+
     surveys.forEach((s, i) => {
+      // Points available (backend computes) — show 0 if not present
+      const points = (s.Points !== undefined && s.Points !== null) ? s.Points : Math.round((s.CPI || 0) * 25);
+      const est = s.EstimatedLength || "N/A";
+      const name = s.SurveyName || `Survey #${i+1}`;
+      const url = s.SurveyURL || "#";
+
       html += `
-        <div style="margin:10px 0;padding:10px;border:1px solid #ddd;border-radius:8px;">
-          <strong>${s.SurveyName}</strong><br>
-          <small>${s.EstimatedLength} mins</small><br>
-          <small>Reward: ${s.CPI} points</small><br>
-          <a href="${s.SurveyURL}" target="_blank" style="color:#007bff;">Start Survey</a>
+        <div style="margin:10px 0;padding:12px;border:1px solid #e0e0e0;border-radius:8px;background:#fff;">
+          <div style="font-weight:600;margin-bottom:6px;">${name}</div>
+          <div style="font-size:13px;color:#666;">${est} mins &nbsp;•&nbsp; Reward: <strong>${points}</strong> pts</div>
+          <div style="margin-top:10px;">
+            ${url !== "#" ? `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:#007bff;font-weight:600;">Start Survey</a>` : `<span style="color:#999;">Survey link unavailable</span>`}
+          </div>
         </div>
       `;
     });
 
+    html += `</div>`; // close scroll container
     instructions.innerHTML = html;
   } catch (err) {
-    console.error(err);
+    console.error("openTolunaSurvey error:", err);
     instructions.innerHTML = `<p style="color:red">Network error: ${err.message}</p>`;
   }
 }
