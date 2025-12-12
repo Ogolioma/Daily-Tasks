@@ -397,7 +397,7 @@ btn {
   z-index: 1000;
   width: 60px; /* container size */
   height: 60px;
-  background-color: none;
+  background-color: white;
   padding: 6px;
   border-radius: 50%;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
