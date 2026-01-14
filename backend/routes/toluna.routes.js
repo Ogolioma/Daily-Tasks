@@ -380,16 +380,55 @@ function calculatePoints(cpi) {
 }
 
 router.post("/completed", async (req, res) => {
-  console.log("Toluna COMPLETED callback:", req.body);
-  const MemberCode = req.body.MemberCode || req.body.memberCode;
-  const CPI = req.body.CPI || req.body.cpi || req.body.Incentive;
-  const points = calculatePoints(CPI);
+  try {
+    console.log("Toluna COMPLETED callback:", req.body);
 
-  // TODO: map MemberCode -> user and add points in DB
-  // If you want, uncomment/find User model and update the user.
+    // ✅ Toluna real fields
+    const memberCode = req.body.UniqueCode;
+    const revenue = req.body.Revenue;
 
-  return res.json({ success: true });
+    if (!memberCode || !revenue) {
+      console.warn("Toluna completed: missing UniqueCode or Revenue");
+      return res.json({ success: true });
+    }
+
+    // Convert revenue → points
+    const points = Math.round(parseFloat(revenue) * 25);
+
+    if (points <= 0) {
+      console.warn("Toluna completed: invalid points calculation");
+      return res.json({ success: true });
+    }
+
+    const User = requireUserModel();
+    if (!User) return res.json({ success: true });
+
+    const user = await User.findOne({ tolunaMemberCode: memberCode });
+
+    if (!user) {
+      console.warn("No user found for Toluna memberCode:", memberCode);
+      return res.json({ success: true });
+    }
+
+    // ✅ Credit user
+    user.points += points;
+    user.notifications.push({
+      message: `🎉 You earned ${points} points for completing a Toluna survey.`,
+    });
+
+    await user.save();
+
+    console.log(
+      `✅ Toluna credit successful: ${points} points → ${user.email}`
+    );
+
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("Toluna completed error:", err);
+    return res.json({ success: true });
+  }
 });
+
 
 router.post("/terminated", async (req, res) => {
   console.log("Toluna TERMINATED callback:", req.body);
