@@ -386,9 +386,10 @@ router.post("/completed", async (req, res) => {
     // ✅ Toluna real fields
     const memberCode = req.body.UniqueCode;
     const revenue = req.body.Revenue;
+    const surveyRef = req.body.SurveyRef; // ✅ used for deduplication
 
-    if (!memberCode || !revenue) {
-      console.warn("Toluna completed: missing UniqueCode or Revenue");
+    if (!memberCode || !revenue || !surveyRef) {
+      console.warn("Toluna completed: missing required fields");
       return res.json({ success: true });
     }
 
@@ -410,8 +411,18 @@ router.post("/completed", async (req, res) => {
       return res.json({ success: true });
     }
 
-    // ✅ Credit user
+    // 🔒 DUPLICATE PROTECTION (safe + lightweight)
+    user.tolunaCompletedSurveys = user.tolunaCompletedSurveys || [];
+
+    if (user.tolunaCompletedSurveys.includes(surveyRef)) {
+      console.warn("Duplicate Toluna callback ignored:", surveyRef);
+      return res.json({ success: true });
+    }
+
+    // ✅ Credit user ONCE
     user.points += points;
+    user.tolunaCompletedSurveys.push(surveyRef);
+
     user.notifications.push({
       message: `🎉 You earned ${points} points for completing a Toluna survey.`,
     });

@@ -11,6 +11,10 @@ const userSchema = new mongoose.Schema({
 
   //Toluna Info
   tolunaMemberCode: { type: String, default: null },
+  tolunaCompletedSurveys: {
+  type: [String],
+  default: [],
+},
 
   // Optional Info
   occupation: String,
