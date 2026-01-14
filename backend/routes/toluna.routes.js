@@ -393,7 +393,7 @@ router.post("/completed", async (req, res) => {
     }
 
     // Convert revenue → points
-    const points = Math.round(parseFloat(revenue) * 25);
+    const points = Math.round(parseFloat(revenue) * 1);
 
     if (points <= 0) {
       console.warn("Toluna completed: invalid points calculation");
